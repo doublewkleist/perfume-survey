@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>灵嗅AI调香室｜AI定制香水DIY问卷</title>
+  <style>
+    :root {
+      --paper: rgba(255, 250, 242, 0.86);
+      --ink: #33261d;
+      --muted: #7b6858;
+      --line: rgba(91, 62, 38, 0.14);
+      --accent: #b89652;
+      --accent-deep: #8f6b2b;
+      --brown: #4d382b;
+      --shadow: 0 24px 60px rgba(67, 46, 25, 0.12);
+      --radius: 24px;
+      --transition: 320ms cubic-bezier(.22,1,.36,1);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "Noto Serif SC", "Source Han Serif SC", "PingFang SC", "Hiragino Sans GB", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(201, 172, 111, 0.28), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(110, 79, 52, 0.12), transparent 20%),
+        linear-gradient(180deg, #f8f3ea 0%, #f0e7da 100%);
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.65), transparent 85%);
+      opacity: 0.22;
+    }
+    .shell {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      padding: 18px 14px 100px;
+      position: relative;
+    }
+    .hero {
+      padding: 20px 8px 22px;
+      position: relative;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid rgba(143, 107, 43, 0.22);
+      border-radius: 999px;
+      background: rgba(255, 250, 242, 0.7);
+      backdrop-filter: blur(14px);
+      color: var(--accent-deep);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 20px 0 10px;
+      font-size: clamp(32px, 8vw, 52px);
+      line-height: 1.02;
+      letter-spacing: 0.02em;
+      font-weight: 600;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+      max-width: 56ch;
+    }
+    .panel {
+      background: var(--paper);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(140deg, rgba(255,255,255,0.5), transparent 38%);
+      pointer-events: none;
+    }
+    .progress-wrap {
+      padding: 18px 18px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .progress-label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .progress-label strong {
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .progress-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(91, 62, 38, 0.08);
+      overflow: hidden;
+    }
+    .progress-bar span {
+      display: block;
+      height: 100%;
+      width: 20%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #d8be82, #9d7740);
+      transition: width var(--transition);
+    }
+    .stage-wrap { padding: 20px 16px 24px; }
+    .step { display: none; animation: rise var(--transition); }
+    .step.active { display: block; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .section-title { margin: 0 0 6px; font-size: 25px; font-weight: 600; }
+    .section-sub { margin: 0 0 22px; color: var(--muted); line-height: 1.7; font-size: 14px; }
+    .question { margin-bottom: 22px; }
+    .question h3 { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: -4px; margin-bottom: 12px; }
+    .chips, .quick-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip, .quick-btn, .ghost-btn, .main-btn, .mini-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255, 251, 245, 0.88);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 12px 15px;
+      font: inherit;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+      cursor: pointer;
+    }
+    .chip:hover, .quick-btn:hover, .ghost-btn:hover, .main-btn:hover, .mini-btn:hover { transform: translateY(-1px); }
+    .chip.active {
+      background: linear-gradient(135deg, rgba(184,150,82,0.18), rgba(143,107,43,0.18));
+      border-color: rgba(143,107,43,0.38);
+      box-shadow: 0 8px 24px rgba(143,107,43,0.12);
+    }
+    .actions { display: flex; gap: 10px; margin-top: 26px; }
+    .main-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #4d382b, #7a5a3d);
+      color: #fff8ee;
+      border-color: transparent;
+      box-shadow: 0 14px 32px rgba(77,56,43,0.24);
+      min-height: 50px;
+    }
+    .ghost-btn {
+      flex: 1;
+      color: var(--brown);
+      background: rgba(255,255,255,0.38);
+      min-height: 50px;
+    }
+    .grid { display: grid; gap: 14px; }
+    .recommend-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .note-block {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 14px;
+      background: rgba(255,255,255,0.45);
+    }
+    .note-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+    .note-head h3 { margin: 0; font-size: 17px; }
+    .note-head span { color: var(--muted); font-size: 12px; }
+    .note-list { display: grid; gap: 12px; }
+    .item-card {
+      border: 1px solid rgba(91,62,38,0.11);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,250,242,0.88);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .item-card.selected {
+      border-color: rgba(143,107,43,0.44);
+      box-shadow: 0 12px 26px rgba(143,107,43,0.12);
+      transform: translateY(-1px);
+    }
+    .item-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .item-title strong { font-size: 16px; font-weight: 600; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: var(--accent-deep);
+      background: rgba(184,150,82,0.16);
+      border: 1px solid rgba(143,107,43,0.2);
+      flex-shrink: 0;
+    }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+    .desc { margin: 0; color: var(--ink); line-height: 1.7; font-size: 13px; }
+    .expand-block { margin-top: 18px; }
+    .all-pool { display: none; margin-top: 12px; gap: 12px; }
+    .all-pool.open { display: grid; }
+    .pool-section { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: rgba(255,255,255,0.35); }
+    .pool-section h4 { margin: 0 0 10px; font-size: 15px; }
+    .pool-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pool-pill {
+      border: 1px solid rgba(91,62,38,0.12);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      background: rgba(255,250,242,0.8);
+      cursor: pointer;
+    }
+    .pool-pill.selected { background: rgba(184,150,82,0.18); border-color: rgba(143,107,43,0.35); }
+    .selection-summary {
+      margin: 16px 0 0;
+      border: 1px dashed rgba(143,107,43,0.32);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,250,242,0.6);
+    }
+    .selection-summary p { margin: 0; color: var(--muted); line-height: 1.7; font-size: 13px; }
+    .selection-summary strong { color: var(--ink); }
+    .ratio-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+    .ratio-box { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: rgba(255,255,255,0.42); }
+    .ratio-box span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+    .ratio-box strong { font-size: 24px; font-weight: 600; }
+    .slider-list { display: grid; gap: 14px; margin-top: 18px; }
+    .slider-card { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: rgba(255,255,255,0.48); }
+    .slider-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 12px; }
+    .slider-top strong { font-size: 15px; }
+    .slider-top span { color: var(--muted); font-size: 12px; }
+    input[type="range"] { width: 100%; accent-color: var(--accent-deep); }
+    .formula-card {
+      padding: 18px;
+      border-radius: 24px;
+      background: linear-gradient(160deg, rgba(255,251,245,0.92), rgba(241,229,211,0.88));
+      border: 1px solid rgba(143,107,43,0.18);
+      box-shadow: 0 18px 40px rgba(78,56,36,0.12);
+    }
+    .formula-card h3 { margin: 0; font-size: 30px; font-weight: 600; }
+    .formula-card p { margin: 8px 0 0; color: var(--muted); line-height: 1.75; }
+    .formula-meta { display: grid; gap: 10px; margin: 18px 0; }
+    .formula-row { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(91,62,38,0.09); }
+    .formula-row:last-child { border-bottom: 0; }
+    .formula-row span { color: var(--muted); font-size: 13px; }
+    .name-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.7);
+      color: var(--ink);
+      font: inherit;
+      margin-bottom: 18px;
+    }
+    .style-blurb {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(184,150,82,0.12);
+      color: var(--brown);
+      line-height: 1.75;
+      font-size: 14px;
+      margin: 16px 0 0;
+    }
+    .small { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%) translateY(16px);
+      background: rgba(51, 38, 29, 0.92);
+      color: #fff9f0;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (min-width: 700px) {
+      .shell { padding: 34px 24px 120px; }
+      .stage-wrap { padding: 28px 24px 30px; }
+      .recommend-grid { grid-template-columns: 1fr 1fr; }
+      .all-pool.open { grid-template-columns: 1fr 1fr 1fr; }
+      .formula-meta { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="brand">灵嗅AI调香室</div>
+      <h1>AI定制香水<br>DIY问卷</h1>
+      <p>先回答几道偏好题，系统会从完整香精池里给你推荐一组安全又有个性的前中后调。你可以继续自由改配，最后生成自己的专属配方卡。</p>
+    </section>
+
+    <main class="panel">
+      <div class="progress-wrap">
+        <div class="progress-head">
+          <div class="progress-label">
+            <span id="step-caption">Step 1 / 5</span>
+            <strong id="step-title">偏好问卷</strong>
+          </div>
+          <span id="step-mini">建立你的闻香画像</span>
+        </div>
+        <div class="progress-bar"><span id="progress-bar"></span></div>
+      </div>
+
+      <div class="stage-wrap">
+        <section class="step active" data-step="1">
+          <h2 class="section-title">先让系统知道你想闻起来像什么</h2>
+          <p class="section-sub">问卷会把你的场景、气质和雷区换成推荐标签。推荐逻辑基于完整香精池的香调分类和生活化描述匹配，不做随机推送。</p>
+          <div id="survey-form"></div>
+          <div class="actions">
+            <button class="main-btn" id="to-recommend">生成我的推荐</button>
+          </div>
+        </section>
+
+        <section class="step" data-step="2">
+          <h2 class="section-title">系统给你的第一版候选</h2>
+          <p class="section-sub">下面是系统从完整香精池中筛出来的推荐前调、中调、后调。优先给你好懂、好搭、低翻车的组合。</p>
+          <div id="recommendation-area"></div>
+          <div class="actions">
+            <button class="ghost-btn" id="back-to-form">返回修改问卷</button>
+            <button class="main-btn" id="to-pick">开始选香</button>
+          </div>
+        </section>
+
+        <section class="step" data-step="3">
+          <h2 class="section-title">从推荐里选出你的前中后调</h2>
+          <p class="section-sub">规则：前调选 1-2 个，中调选 1-2 个，后调选 1 个。你也可以展开完整香精池，自由替换成更个性的一版。</p>
+          <div id="picker-area"></div>
+          <div class="selection-summary" id="selection-summary"></div>
+          <div class="actions">
+            <button class="ghost-btn" id="back-to-recommend">返回推荐</button>
+            <button class="main-btn" id="to-ratio">确认并调比例</button>
+          </div>
+        </section>
+
+        <section class="step" data-step="4">
+          <h2 class="section-title">让这支香更像你</h2>
+          <p class="section-sub">默认采用新手友好的平衡耐闻型比例。你可以一键往不同风格方向推，也可以手动拖动每个香精的占比微调。</p>
+          <div class="quick-row">
+            <button class="quick-btn" data-preset="fresh">更清爽</button>
+            <button class="quick-btn" data-preset="soft">更温柔</button>
+            <button class="quick-btn" data-preset="presence">更有存在感</button>
+          </div>
+          <div class="ratio-summary" id="ratio-summary"></div>
+          <div class="slider-list" id="slider-list"></div>
+          <p class="small">新手参考：前调 25%-40%，中调 35%-50%，后调 20%-30%。当前显示为自动归一化后的最终占比。</p>
+          <div class="actions">
+            <button class="ghost-btn" id="back-to-pick">返回选香</button>
+            <button class="main-btn" id="to-result">生成配方卡</button>
+          </div>
+        </section>
+
+        <section class="step" data-step="5">
+          <h2 class="section-title">你的专属配方卡</h2>
+          <p class="section-sub">这是一张可以直接拿去下单、复购和二次调整的配方记录。你也可以先复制文案发给朋友。</p>
+          <input id="formula-name" class="name-input" maxlength="24" placeholder="给这支香起个名字，比如：白衬衫后的风">
+          <div id="result-card"></div>
+          <div class="actions">
+            <button class="ghost-btn" id="share-formula">分享</button>
+            <a class="main-btn" id="order-link" href="https://example.com/order" target="_blank" rel="noreferrer" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">下单</a>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const perfumePool = [{"category":"柑橘调","star":true,"name":"柠檬","code":"YLD5014","layer":"T","description":"像刚切开的黄柠檬和气泡水，酸亮、直接、很提神","pairing":["绿茶","苦橙花","雪松","白麝香"]},{"category":"柑橘调","star":true,"name":"柚子","code":"YLD5027","layer":"T","description":"像冰镇柚子汽水，清爽里带一点清苦，夏天很讨喜","pairing":["绿茶","小苍兰","西瓜酮","白麝香"]},{"category":"柑橘调","star":true,"name":"佛手柑","code":"YLD5089","layer":"T/M","description":"像刚削开的柑橘皮和晨间空气，明亮、干净、百搭","pairing":["苦橙花","牡丹","绿茶","雪松"]},{"category":"柑橘调","star":true,"name":"青柠","code":"YLD5117","layer":"T","description":"像现挤青柠配苏打水，酸感更利落，运动感很强","pairing":["西瓜酮","龙井茶","雪松","香根草"]},{"category":"柑橘调","star":false,"name":"柑橘","code":"YLD5003","layer":"T","description":"像橘子皮被掰开的第一下，圆润清新，比柠檬更柔和","pairing":["花香中调","白麝香","雪松"]},{"category":"柑橘调","star":false,"name":"香柠檬","code":"YLD5023","layer":"T","description":"像柠檬皮里多了一点花香和苦感，气质比直白柠檬更成熟","pairing":["橙花","薰衣草","雪松"]},{"category":"柑橘调","star":false,"name":"苦橙","code":"YLD5052","layer":"T","description":"像橙皮带白瓤的清苦气，清醒、偏大人感","pairing":["橙花","广藿香","龙涎"]},{"category":"柑橘调","star":false,"name":"蜜橘","code":"YLD5066","layer":"T","description":"像剥开一只甜橘子，甜润、圆软、很容易被接受","pairing":["小苍兰","桂花","白麝香"]},{"category":"柑橘调","star":false,"name":"西柚","code":"YLD5094","layer":"M","description":"像粉西柚果肉，酸甜里带一点透明苦感，适合做果汁感中段","pairing":["牡丹","绿叶","西瓜酮"]},{"category":"柑橘调","star":false,"name":"葡萄柚","code":"YLD5156","layer":"T","description":"像早晨吃的葡萄柚半果，苦甜更明显，比较利落","pairing":["绿茶","海藻","雪松"]},{"category":"绿叶 / 草本调","star":true,"name":"柠檬马鞭草","code":"YLD5059","layer":"T","description":"像热天里一杯柠檬草本冰茶，清亮又有一点香草感","pairing":["柑橘","绿茶","白麝香"]},{"category":"绿叶 / 草本调","star":true,"name":"无花果叶","code":"YLD5084","layer":"T/M","description":"像掰开一片带奶感的绿叶，青绿中带一点柔软果肉感","pairing":["桂花","龙井茶","檀香","雪松"]},{"category":"绿叶 / 草本调","star":true,"name":"竹子","code":"YLD5129","layer":"T/M","description":"像竹林里潮湿又干净的空气，轻盈、安静、很东方","pairing":["绿茶","白玉兰","白麝香"]},{"category":"绿叶 / 草本调","star":true,"name":"薄荷","code":"YLD5192","layer":"T","description":"像刚捏碎的薄荷叶，凉感直接，少量就能把配方拉清","pairing":["柠檬","西瓜酮","尤加利"]},{"category":"绿叶 / 草本调","star":false,"name":"罗勒","code":"YLD5009","layer":"M","description":"像意面上现撒的罗勒叶，辛香和绿感并存，比较有厨房气息","pairing":["番茄叶","柑橘","木质调"]},{"category":"绿叶 / 草本调","star":false,"name":"绿叶","code":"YLD5010","layer":"T/M","description":"像新鲜叶片被揉开的汁水味，能给花果香加“青感骨架”","pairing":["牡丹","梨","铃兰感方向"]},{"category":"绿叶 / 草本调","star":false,"name":"迷迭香","code":"YLD5041","layer":"M","description":"像烤箱边缘的草本枝条，清冷、醒神、略带药感","pairing":["柠檬","薰衣草","雪松"]},{"category":"绿叶 / 草本调","star":false,"name":"艾蒿","code":"YLD5054","layer":"M","description":"像晒干草药和一点苦凉气，辨识度高，但会比较挑人","pairing":["柑橘","藏红花","木质调"]},{"category":"绿叶 / 草本调","star":false,"name":"番茄叶","code":"YLD5064","layer":"T","description":"像掐断番茄藤时出来的青涩汁味，真实又有菜园感，比较挑人","pairing":["罗勒","柠檬","橄榄树"]},{"category":"绿叶 / 草本调","star":false,"name":"月桂叶","code":"YLD5086","layer":"T/M","description":"像汤锅里放进去的月桂叶，绿感里带一点香料感","pairing":["苦橙","木质香","广藿香"]},{"category":"绿叶 / 草本调","star":false,"name":"马鞭草","code":"YLD5096","layer":"T/M","description":"像香草园里带柠檬感的绿叶，比柠檬马鞭草更柔和","pairing":["佛手柑","绿茶","白麝香"]},{"category":"绿叶 / 草本调","star":false,"name":"快乐鼠尾草","code":"YLD5103","layer":"T","description":"像微苦的草本精油和干净空气，带一点冷静感","pairing":["薰衣草","香根草","龙涎"]},{"category":"绿叶 / 草本调","star":false,"name":"醋栗叶","code":"YLD5108","layer":"T/M","description":"像黑加仑叶和青果皮，酸绿、带一点猫系锋利感，比较挑人","pairing":["葡萄柚","玫瑰","海藻"]},{"category":"绿叶 / 草本调","star":false,"name":"白松香","code":"YLD5114","layer":"M","description":"像松针和树脂间的清凉木感，能把香味拉向森林","pairing":["冷杉","雪松","杜松"]},{"category":"绿叶 / 草本调","star":false,"name":"苦橙叶","code":"YLD5147","layer":"T","description":"像橙树叶子被太阳晒热后的青苦气，清新里带一点成熟感","pairing":["橙花","龙井茶","白麝香"]},{"category":"绿叶 / 草本调","star":false,"name":"回芹","code":"YLD5168","layer":"T/M","description":"像带甜凉气的芹籽和香草，草本感强，比较小众","pairing":["柠檬","尤加利","木质调"]},{"category":"绿叶 / 草本调","star":false,"name":"百里香","code":"YLD5185","layer":"M/B","description":"像厨房里的干百里香，暖草本里带一点苦感，适合少量提骨架","pairing":["柠檬","肉桂","雪松"]},{"category":"花香调","star":true,"name":"苦橙花","code":"YLD5007","layer":"T/M","description":"像白衬衫上晒过太阳的白花香，清透、有精神气","pairing":["佛手柑","绿茶","雪松","白麝香"]},{"category":"花香调","star":true,"name":"牡丹","code":"YLD5008","layer":"M","description":"像浅粉花束刚拆开包装，轻盈、柔软、没攻击性","pairing":["水蜜桃","梨","白麝香"]},{"category":"花香调","star":true,"name":"白玉兰","code":"YLD5013","layer":"T/M","description":"像春天路边白玉兰开在风里，洁净又有一点奶白花瓣感","pairing":["竹子","佛手柑","檀香"]},{"category":"花香调","star":true,"name":"桂花","code":"YJD0201","layer":"M","description":"像秋天傍晚飘来的甜花香，熟悉、温柔、很有记忆点","pairing":["水蜜桃","无花果叶","琥珀","檀香"]},{"category":"花香调","star":true,"name":"小苍兰","code":"YLD5044","layer":"M","description":"像洗干净的头发和衣领之间淡淡的花香，轻、净、非常新手友好","pairing":["柚子","水蜜桃","雪松","白麝香"]},{"category":"花香调","star":true,"name":"保加利亚玫瑰","code":"YQD2607","layer":"M","description":"像新鲜红玫瑰花瓣泡进水里，花感完整但不至于太老派","pairing":["荔枝","树莓","檀香"]},{"category":"花香调","star":false,"name":"摩洛哥玫瑰","code":"YLD5012","layer":"M","description":"像深红花瓣和一点微甜酒意，较饱满，更偏成熟路线","pairing":["黑莓","广藿香","琥珀"]},{"category":"花香调","star":false,"name":"栀子花","code":"YLD5029","layer":"M","description":"像夏夜白花压近鼻尖，奶白、浓郁、很有存在感","pairing":["橙花","椰子","白麝香"]},{"category":"花香调","star":false,"name":"依兰依兰","code":"YLD5034","layer":"M","description":"像热带黄花和暖皮肤，花香里带油润感，稍重手就会厚","pairing":["香草","檀香","琥珀"]},{"category":"花香调","star":false,"name":"紫丁香","code":"YLD5035","layer":"M","description":"像春天校园里的淡紫花团，粉润、轻甜、带一点空气感","pairing":["梨","牡丹","白麝香"]},{"category":"花香调","star":false,"name":"花香","code":"YLD5037","layer":"T/M","description":"像一束综合花束的干净轮廓，适合给配方补“花感”","pairing":["果香","木质调","白麝香"]},{"category":"花香调","star":false,"name":"兰花","code":"YLD5038","layer":"M","description":"像温室里干净的花瓣香，柔和里带一点奶润","pairing":["竹兰","檀香","白麝香"]},{"category":"花香调","star":false,"name":"莲花","code":"YLD5039","layer":"M","description":"像清水里的淡花气，轻、透、很有水边感","pairing":["西瓜酮","海藻","白麝香"]},{"category":"花香调","star":false,"name":"大花茉莉","code":"YLD5045","layer":"M","description":"像夜里盛开的白茉莉，甜白花感明显，比较有存在感","pairing":["柑橘","檀香","龙涎"]},{"category":"花香调","star":false,"name":"橙花","code":"YLD5048","layer":"M","description":"像橙树开花时的干净白花气，比苦橙花更圆润","pairing":["佛手柑","苦橙叶","雪松"]},{"category":"花香调","star":false,"name":"鸢尾花","code":"YLD5050","layer":"M","description":"像高级化妆包里干净的粉感花香，带一点冷静的脂粉气","pairing":["紫丁香","麝香","檀香"]},{"category":"花香调","star":false,"name":"洋甘菊","code":"YLD5057","layer":"M","description":"像一杯草本花茶，轻柔、带一点苹果般甜感","pairing":["苹果","绿茶","白麝香"]},{"category":"花香调","star":false,"name":"鸡蛋花","code":"YLD5065","layer":"M","description":"像海岛度假酒店里带奶感的热带花香，暖而柔","pairing":["椰子","香草","白麝香"]},{"category":"花香调","star":false,"name":"梅花","code":"YLD5079","layer":"T/M","description":"像冷空气里的浅花香，克制、微酸、很东方","pairing":["龙井茶","竹子","檀香"]},{"category":"花香调","star":false,"name":"樱花","code":"YLD5088","layer":"T/M","description":"像春天风里很淡的粉花气，轻软、带一点皂净感","pairing":["梨","牡丹","棉花"]},{"category":"花香调","star":false,"name":"夜来香","code":"YLD5090","layer":"M","description":"像夜晚靠近墙边时扑来的浓白花，妩媚但很挑人","pairing":["橙花","琥珀","龙涎"]},{"category":"花香调","star":false,"name":"水仙花","code":"YLD5101","layer":"M","description":"像湿润花茎和白花的清冷香，带一点绿色根部感","pairing":["绿叶","鸢尾","白麝香"]},{"category":"花香调","star":false,"name":"百合","code":"YLD5111","layer":"T/M","description":"像婚礼花束里的新鲜百合，明净、挺拔、存在感清晰","pairing":["梨","牡丹","雪松"]},{"category":"花香调","star":false,"name":"含羞草","code":"YLD5116","layer":"M","description":"像细软黄花和一点粉粉的空气感，温柔但不张扬","pairing":["鸢尾","棉花","白麝香"]},{"category":"花香调","star":false,"name":"天竺葵","code":"YLD5137","layer":"M","description":"像玫瑰叶和薄荷之间的花草味，偏中性，能提神","pairing":["柑橘","薰衣草","香根草"]},{"category":"花香调","star":false,"name":"忍冬","code":"YLD5140","layer":"M","description":"像夏天篱笆边的甜花蜜，柔软、微甜、带一点乡野感","pairing":["梨","白麝香","桂花"]},{"category":"花香调","star":false,"name":"康乃馨","code":"YLD5143","layer":"M","description":"像带一点辛香的花店花束，花感里藏着胡椒样暖意","pairing":["肉豆蔻","檀香","琥珀"]},{"category":"花香调","star":false,"name":"丁香","code":"YLD5157","layer":"M/B","description":"像干花和香料柜混在一起，辛甜花感明显，比较挑人","pairing":["玫瑰","肉桂","安息香脂"]},{"category":"花香调","star":false,"name":"西柚花","code":"YLD5172","layer":"T","description":"像柑橘树花开的清透花香，既亮又轻","pairing":["葡萄柚","绿茶","白麝香"]},{"category":"花香调","star":false,"name":"郁金香","code":"YLD5173","layer":"M","description":"像切花店里清凉的花茎和柔和花瓣，花香偏轻","pairing":["梨","绿叶","雪松"]},{"category":"花香调","star":false,"name":"山茶花","code":"YLD5191","layer":"T/M","description":"像洗净后很轻的白花气，温柔、干净、没压力","pairing":["柚子","棉花","白麝香"]},{"category":"花香调","star":false,"name":"椴树花","code":"YLD5193","layer":"T/M","description":"像蜂蜜花茶和树荫空气，柔甜里带一点草本","pairing":["蜂蜜","绿茶","雪松"]},{"category":"花香调","star":false,"name":"棉花","code":"YLD5203","layer":"T/M","description":"像刚晒好的毛巾和衣物纤维，干净、柔软、偏皂净","pairing":["樱花","皂感","白麝香"]},{"category":"果香调","star":true,"name":"希腊无花果","code":"YLD5001","layer":"T/M","description":"像熟无花果果肉和青皮一起被切开，甜里有绿感","pairing":["无花果叶","绿茶","檀香"]},{"category":"果香调","star":true,"name":"苹果","code":"YLD5016","layer":"T","description":"像刚咬开的青红苹果，脆、干净、很通勤","pairing":["洋甘菊","牡丹","白麝香"]},{"category":"果香调","star":true,"name":"梨","code":"YLD5099","layer":"M","description":"像带水珠的白梨果肉，透明、清甜、非常好搭","pairing":["小苍兰","樱花","白麝香"]},{"category":"果香调","star":true,"name":"荔枝","code":"YLD5144","layer":"T","description":"像冰镇荔枝剥壳后的果汁，甜润但不厚","pairing":["玫瑰","牡丹","白麝香"]},{"category":"果香调","star":true,"name":"水蜜桃","code":"YLD5201","layer":"T/M","description":"像咬开一口多汁白桃，柔甜、亲近、送礼友好","pairing":["小苍兰","桂花","白麝香"]},{"category":"果香调","star":false,"name":"红浆果","code":"YLD5005","layer":"T/M","description":"像一把混合莓果打成果汁，酸甜活泼","pairing":["玫瑰","龙涎","香草"]},{"category":"果香调","star":false,"name":"芒果","code":"YLD5011","layer":"T/M","description":"像熟透芒果切块，热带感足，甜度较高","pairing":["椰子","桂花","麝香"]},{"category":"果香调","star":false,"name":"甜橙","code":"YLD5019","layer":"T","description":"像剥开的甜橙果肉，圆润讨喜，没有苦感压力","pairing":["橙花","香草","白麝香"]},{"category":"果香调","star":false,"name":"草莓","code":"YLD5028","layer":"T","description":"像草莓软糖和新鲜草莓之间，甜感明显，适合年轻方向","pairing":["香草","奶油","棉花"]},{"category":"果香调","star":false,"name":"黄瓜","code":"YLD5053","layer":"T","description":"像切开的冰镇黄瓜，清凉、多汁、很有“刚洗过”的感觉","pairing":["海藻","莲花","白麝香"]},{"category":"果香调","star":false,"name":"葡萄","code":"YLD5056","layer":"T","description":"像甜葡萄汁，圆润偏甜，适合做果香主体","pairing":["白葡萄酒","玫瑰","麝香"]},{"category":"果香调","star":false,"name":"百香果","code":"YLD5061","layer":"T","description":"像热带果汁里最跳的那一下，酸甜鲜明，很有活力","pairing":["青柠","西瓜酮","白麝香"]},{"category":"果香调","star":false,"name":"黑莓","code":"YLD5074","layer":"T/M","description":"像深色莓果煮成果酱前的酸甜味，偏成熟","pairing":["玫瑰","广藿香","琥珀"]},{"category":"果香调","star":false,"name":"酸樱桃","code":"YLD5083","layer":"M/B","description":"像樱桃果酱里带酸核气，浓郁、有点暗红酒感，比较挑人","pairing":["玫瑰","黑巧克力","安息香脂"]},{"category":"果香调","star":false,"name":"哈密瓜","code":"YLD5095","layer":"T","description":"像刚切开的蜜瓜，甜润多汁，夏天很友好","pairing":["西瓜酮","莲花","白麝香"]},{"category":"果香调","star":false,"name":"大黄","code":"YLD5109","layer":"M","description":"像果派里那种酸酸的植物茎味，青酸感特别，偏小众","pairing":["苹果","玫瑰","姜"]},{"category":"果香调","star":false,"name":"菠萝","code":"YLD5139","layer":"T","description":"像菠萝果肉和一点酸甜汁水，热带感直接","pairing":["椰子","莫吉托","白麝香"]},{"category":"果香调","star":false,"name":"蓝莓","code":"YLD5148","layer":"T","description":"像蓝莓果酱前段的果皮甜气，圆润、偏年轻","pairing":["香草","紫丁香","麝香"]},{"category":"果香调","star":false,"name":"树莓","code":"YLD5158","layer":"T","description":"像树莓气泡饮，酸甜轻快，比草莓更利落","pairing":["玫瑰","西柚花","白麝香"]},{"category":"美食 / 酒饮调","star":true,"name":"咖啡","code":"YLD5006","layer":"M/B","description":"像刚磨开的咖啡豆和热拿铁杯口，苦香明显","pairing":["香草","檀香","琥珀"]},{"category":"美食 / 酒饮调","star":true,"name":"牛奶","code":"YLD5015","layer":"M/B","description":"像温牛奶和奶泡，柔和、圆润、适合把配方磨平","pairing":["茶香","香草","桂花"]},{"category":"美食 / 酒饮调","star":true,"name":"香草","code":"YLD5022","layer":"M/B","description":"像香草冰淇淋和烘焙香，温暖、讨喜、很能兜底","pairing":["果香","咖啡","琥珀"]},{"category":"美食 / 酒饮调","star":true,"name":"奶油","code":"YLD5208","layer":"M/B","description":"像刚打发的淡奶油，绵软、奶甜，少量就能让香气更顺","pairing":["草莓","奶茶店香","香草"]},{"category":"美食 / 酒饮调","star":false,"name":"蜂蜜","code":"YLD5031","layer":"M","description":"像勺子上挂着的蜂蜜，甜黏感明显，适合点到即止","pairing":["椴树花","桂花","琥珀"]},{"category":"美食 / 酒饮调","star":false,"name":"椰子","code":"YLD5033","layer":"M/B","description":"像椰奶和海边防晒霜之间，热带度假感很足","pairing":["鸡蛋花","芒果","香草"]},{"category":"美食 / 酒饮调","star":false,"name":"杏仁","code":"YLD5060","layer":"M","description":"像杏仁露和坚果奶，带一点干粉甜感","pairing":["牛奶","鸢尾","零陵香豆"]},{"category":"美食 / 酒饮调","star":false,"name":"焦糖","code":"YLD5062","layer":"M/B","description":"像熬到微焦的糖浆，暖甜厚实，容易把配方压重","pairing":["咖啡","香草","零陵香豆"]},{"category":"美食 / 酒饮调","star":false,"name":"白葡萄酒","code":"YLD5069","layer":"T/M","description":"像冰镇白葡萄酒杯口，果香里带一点发酵轻酸","pairing":["葡萄","西柚花","白麝香"]},{"category":"美食 / 酒饮调","star":false,"name":"烈酒","code":"YLD5078","layer":"M/B","description":"像酒吧里刚开瓶的深色酒，暖辣、成熟、比较挑人","pairing":["烟草","橡木","琥珀"]},{"category":"美食 / 酒饮调","star":false,"name":"莫吉托","code":"YLD5081","layer":"T/M","description":"像青柠、薄荷和酒杯边缘一起扑上来，特别适合夏季","pairing":["青柠","薄荷","西瓜酮"]},{"category":"美食 / 酒饮调","star":false,"name":"香槟","code":"YLD5085","layer":"M/B","description":"像杯中细气泡和果香酒液，轻奢、发光感强","pairing":["白葡萄酒","梨","玫瑰"]},{"category":"美食 / 酒饮调","star":false,"name":"可可果","code":"YLD5105","layer":"M","description":"像刚掰开可可果和淡巧克力粉，带一点苦甜果壳感","pairing":["咖啡","香草","广藿香"]},{"category":"美食 / 酒饮调","star":false,"name":"甘草","code":"YLD5106","layer":"M","description":"像中药糖和甘草片，甜里带药感，非常挑人","pairing":["茴香感方向","烟草","树脂类"]},{"category":"美食 / 酒饮调","star":false,"name":"零陵香豆","code":"YLD5146","layer":"B","description":"像奶香、杏仁和干草混在一起的暖甜底，特别适合做尾韵","pairing":["香草","琥珀","檀香"]},{"category":"美食 / 酒饮调","star":false,"name":"黑巧克力","code":"YLD5152","layer":"M/B","description":"像掰开一块高可可黑巧，苦感明显，成熟度高","pairing":["酸樱桃","咖啡","安息香脂"]},{"category":"美食 / 酒饮调","star":false,"name":"红酒","code":"YLD5198","layer":"M/B","description":"像红酒杯里深色果香和木桶感，氛围感足，比较挑人","pairing":["黑莓","玫瑰","橡木"]},{"category":"美食 / 酒饮调","star":false,"name":"胡萝卜","code":"YLD5205","layer":"M/B","description":"像切开的新鲜胡萝卜和一点根茎甜味，土甜感明显，偏小众","pairing":["鸢尾","檀香","白麝香"]},{"category":"美食 / 酒饮调","star":false,"name":"香菜","code":"YLD5206","layer":"T","description":"像刚切碎的香菜叶，个性很强，喜欢的人会很喜欢，不喜欢的人会很排斥","pairing":["柑橘","番茄叶","绿叶"]},{"category":"木质调","star":true,"name":"雪松","code":"YLD5025","layer":"B","description":"像干净木柜和刚削开的铅笔木头，清爽、克制、非常百搭","pairing":["几乎全部柑橘","花香","茶香方向"]},{"category":"木质调","star":true,"name":"薰衣草","code":"YLD5026","layer":"M","description":"像晒过太阳的亚麻布和草本气息，沉稳但不老气","pairing":["佛手柑","龙井茶","雪松"]},{"category":"木质调","star":true,"name":"檀香","code":"YLD5018","layer":"B","description":"像温温的木头和奶感木香，圆润、安静、很适合贴肤留香","pairing":["牡丹","桂花","无花果叶"]},{"category":"木质调","star":true,"name":"香根草","code":"YLD5043","layer":"M/B","description":"像雨后草地和木根的干净土感，偏中性，不甜","pairing":["青柠","薰衣草","雪松"]},{"category":"木质调","star":true,"name":"琥珀木","code":"YLD5076","layer":"M/B","description":"像木头被暖体温烘过的感觉，带一点干净暖感","pairing":["白花","琥珀","白麝香"]},{"category":"木质调","star":false,"name":"乌木","code":"YLD5021","layer":"B","description":"像深色旧木柜和一点烟熏阴影，厚重、比较挑人","pairing":["玫瑰","藏红花","琥珀"]},{"category":"木质调","star":false,"name":"橡木苔","code":"YLD5024","layer":"B","description":"像老树皮和潮湿苔面，复古感强，适合做成熟底盘","pairing":["柑橘","薰衣草","广藿香"]},{"category":"木质调","star":false,"name":"杜松","code":"YLD5030","layer":"M","description":"像杜松子和冷冽空气，带一点金酒既视感","pairing":["青柠","莫吉托","冷杉"]},{"category":"木质调","star":false,"name":"木兰","code":"YLD5032","layer":"M","description":"像带木质感的白花，柔和里带一点奶木气","pairing":["白玉兰","檀香","白麝香"]},{"category":"木质调","star":false,"name":"巴西红木","code":"YLD5036","layer":"B","description":"像抛光后的红木家具，暖、稳、成熟感较强","pairing":["玫瑰","琥珀","龙涎"]},{"category":"木质调","star":false,"name":"木质香","code":"YLD5051","layer":"M/B","description":"像干净木质香水的通用骨架，适合补“木感轮廓”","pairing":["柑橘","花香","白麝香"]},{"category":"木质调","star":false,"name":"愈创木","code":"YLD5058","layer":"B","description":"像烟熏木头和药柜气息，个性强，比较挑人","pairing":["咖啡","烟草","琥珀"]},{"category":"木质调","star":false,"name":"柚木","code":"YLD5068","layer":"M/B","description":"像晒热的甲板木头，干燥、稳重、偏中性","pairing":["海藻","白花","龙涎"]},{"category":"木质调","star":false,"name":"橄榄树","code":"YLD5073","layer":"T/M","description":"像橄榄叶和树干的青木气，略带苦感","pairing":["番茄叶","苦橙","杜松"]},{"category":"木质调","star":false,"name":"黑檀","code":"YLD5075","layer":"M/B","description":"像深色木料和一点冷冽阴影，气质偏酷，比较挑人","pairing":["乌木","皮革","龙涎"]},{"category":"木质调","star":false,"name":"桦木","code":"YLD5077","layer":"M/B","description":"像白桦树皮和一点轻烟感，适合做中性木感","pairing":["葡萄柚","皮革","麝香"]},{"category":"木质调","star":false,"name":"橡木","code":"YLD5102","layer":"B","description":"像木桶和酒窖木板，成熟、稳重","pairing":["红酒","烈酒","烟草"]},{"category":"木质调","star":false,"name":"岩兰草","code":"YLD5133","layer":"M/B","description":"像干燥根系和冷土木气，比香根草更硬朗","pairing":["柑橘","薰衣草","龙涎"]},{"category":"木质调","star":false,"name":"榕树","code":"YLD5181","layer":"M/B","description":"像树皮、树乳和一点潮湿绿感，比较有“老树”氛围","pairing":["绿叶","檀香","白麝香"]},{"category":"木质调","star":false,"name":"橄榄","code":"YLD5182","layer":"M/B","description":"像橄榄果和枝叶一起压出的苦绿感，小众但有辨识度","pairing":["苦橙","番茄叶","木质香"]},{"category":"木质调","star":false,"name":"玫瑰木","code":"YLD5184","layer":"M/B","description":"像木头里透出一点玫瑰暖甜，比直白玫瑰更克制","pairing":["玫瑰","檀香","琥珀木"]},{"category":"木质调","star":false,"name":"冷杉","code":"YLD5186","layer":"M/B","description":"像冬天针叶林和松脂空气，冷冽、干净、节日感强","pairing":["白松香","杜松","龙涎"]},{"category":"茶香调","star":true,"name":"绿茶","code":"YLD5087","layer":"T/M","description":"像杯子里还冒着一点热气的清茶，干净、轻盈、不吵闹","pairing":["佛手柑","柚子","白麝香"]},{"category":"茶香调","star":true,"name":"龙井茶","code":"YLD5174","layer":"T/M","description":"像刚冲开的龙井，清新里有豆香回甘，很有安静高级感","pairing":["无花果叶","牡丹","雪松"]},{"category":"茶香调","star":true,"name":"红茶","code":"YLD5159","layer":"M","description":"像热红茶和一点干燥茶点，温暖、稳重、秋冬友好","pairing":["香草","桂花","檀香"]},{"category":"茶香调","star":true,"name":"乌龙茶","code":"YLD5162","layer":"M","description":"像半发酵茶汤，花香和焙火之间很平衡","pairing":["桂花","玫瑰","白麝香"]},{"category":"茶香调","star":false,"name":"茶叶","code":"YLD5055","layer":"M","description":"像打开茶叶罐闻到的干茶香，偏原叶质感","pairing":["柑橘","竹子","雪松"]},{"category":"茶香调","star":false,"name":"抹茶","code":"YLD5080","layer":"M","description":"像抹茶粉和奶香甜点之间，青苦里带柔软感","pairing":["牛奶","香草","白麝香"]},{"category":"茶香调","star":false,"name":"普洱","code":"YLD5177","layer":"M/B","description":"像陈茶、木盒和一点潮润感，厚度高，比较挑人","pairing":["檀香","广藿香","琥珀"]},{"category":"东方 / 辛香 / 树脂调","star":true,"name":"琥珀","code":"YLD5047","layer":"B","description":"像柔软毛衣和微微发热的皮肤，带一点暖意，秋冬很好用","pairing":["桂花","水蜜桃","白花","檀香"]},{"category":"东方 / 辛香 / 树脂调","star":true,"name":"生姜","code":"YLD5020","layer":"M","description":"像刚切开的姜和暖气腾起的辛香，能把配方提得更鲜活","pairing":["柠檬","茶香","木质调"]},{"category":"东方 / 辛香 / 树脂调","star":true,"name":"小豆蔻","code":"YLD5136","layer":"M","description":"像奶茶里淡淡的辛香颗粒，暖而不厚，很适合做精致感","pairing":["红茶","玫瑰","檀香"]},{"category":"东方 / 辛香 / 树脂调","star":true,"name":"广藿香","code":"YLD5004","layer":"M/B","description":"像木质书页里藏着一点潮润土感，能让香味更有层次","pairing":["薰衣草","桂花","无花果叶","雪松"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"安息香脂","code":"YLD5093","layer":"M","description":"像暖甜树脂和香草糖浆，能把配方收得更圆","pairing":["琥珀","香草","黑巧克力"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"苏合香","code":"YLD5042","layer":"M","description":"像旧木匣子里带甜暖气的树脂，复古感明显","pairing":["琥珀","乳香","檀香"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"红没药","code":"YLD5049","layer":"B","description":"像药甜树脂和焚香烟气，厚重、偏宗教感，比较挑人","pairing":["乳香","乌木","琥珀"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"没药","code":"YLD5063","layer":"M/B","description":"像树脂、药柜和一点苦甜烟感，成熟度高","pairing":["乳香","广藿香","龙涎"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"南姜","code":"YLD5082","layer":"M/B","description":"像比生姜更干更辛的根茎香，带一点药香感","pairing":["茶香","木质香","烟草"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"肉桂","code":"YLD5098","layer":"M","description":"像甜点上的肉桂粉，暖甜辛辣并存，少量就很有秋冬感","pairing":["苹果","香草","琥珀"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"肉豆蔻","code":"YLD5113","layer":"M","description":"像奶茶或烘焙里的粉状辛香，比肉桂更柔","pairing":["康乃馨","红茶","檀香"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"烟草","code":"YLD5124","layer":"M/B","description":"像未点燃烟草叶和烟盒纸香，成熟、偏暗，明显比较挑人","pairing":["香草","橡木","琥珀"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"绒面革","code":"YLD5125","layer":"M/B","description":"像新皮夹克里柔软皮面那股气，个性很强，比较挑人","pairing":["紫罗兰感方向","桦木","龙涎"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"秘鲁香脂","code":"YLD5134","layer":"B","description":"像甜润树脂和药感木香，暖厚耐留","pairing":["香草","琥珀","广藿香"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"乳香","code":"YLD5142","layer":"B","description":"像教堂焚香和干净树脂烟气，空灵又偏冷","pairing":["没药","雪松","龙涎"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"辛香料","code":"YLD5161","layer":"M","description":"像打开香料盒时的综合暖辣味，适合补“香料感”而不是单独做主角","pairing":["红茶","琥珀","木质调"]},{"category":"东方 / 辛香 / 树脂调","star":false,"name":"树脂","code":"YLD5163","layer":"M/B","description":"像松脂和暖树皮的综合气味，偏厚，适合收尾","pairing":["冷杉","琥珀","广藿香"]},{"category":"水生调","star":true,"name":"西瓜酮","code":"YLD5132","layer":"T","description":"像冰镇西瓜皮和凉风，清透、带水感，是夏天很好用的提亮器","pairing":["青柠","柚子","莲花","白麝香"]},{"category":"水生调","star":false,"name":"海藻","code":"YLD5126","layer":"M","description":"像海边礁石和咸湿空气，真实海感更强，也更挑人","pairing":["葡萄柚","黄瓜","龙涎","柚木"]},{"category":"药香调","star":true,"name":"尤加利","code":"YLD5092","layer":"M","description":"像感冒膏和冷空气一起冲上来，清凉、通透、醒神","pairing":["薄荷","柠檬","海藻"]},{"category":"药香调","star":false,"name":"藏红花","code":"YLD5071","layer":"M","description":"像高级皮革香里常见的暖金属辛香，贵气但不亲民","pairing":["乌木","玫瑰","琥珀"]},{"category":"药香调","star":false,"name":"当归","code":"YLD5196","layer":"M/B","description":"像药材铺里甘苦的根茎味，药感明确，比较挑人","pairing":["檀香","树脂","白麝香"]},{"category":"药香调","star":false,"name":"灵芝","code":"YLD5197","layer":"B","description":"像木质药材和一点菌类干气，东方感很强，明显偏小众","pairing":["普洱","檀香","乳香"]},{"category":"抽象 / 质感调","star":true,"name":"皂感","code":"YLD5112","layer":"M/B","description":"像刚洗完澡后留在皮肤和毛巾上的干净味，很适合做“洁净感”","pairing":["棉花","白麝香","柑橘"]},{"category":"抽象 / 质感调","star":false,"name":"醛香","code":"YLD5017","layer":"B","description":"像香水开场那股闪一下的金属空气感，复古、挑人","pairing":["白花","皂感","麝香"]},{"category":"抽象 / 质感调","star":false,"name":"土壤","code":"YLD5067","layer":"B","description":"像雨后翻开的湿土，真实感强，但非常挑人","pairing":["香根草","无花果叶","广藿香"]},{"category":"抽象 / 质感调","star":false,"name":"脂粉味","code":"YLD5097","layer":"M","description":"像化妆台和粉扑留下的柔粉气，偏复古","pairing":["鸢尾","含羞草","麝香"]},{"category":"抽象 / 质感调","star":false,"name":"醛","code":"YLD5123","layer":"T/M","description":"像肥皂泡和冷白空气，能给香味加“亮面”，但比例高会冲","pairing":["棉花","白玉兰","白麝香"]},{"category":"动物香调","star":true,"name":"白麝香","code":"YLD5002","layer":"B","description":"像洗完澡后皮肤上残留的柔软气味，干净、贴肤、最稳的后调之一","pairing":["几乎全部花果茶方向"]},{"category":"动物香调","star":false,"name":"龙涎","code":"YLD5040","layer":"B","description":"像海风、盐感和暖皮肤混在一起，能让香味更立体、更有高级感","pairing":["海藻","柑橘","木质调"]},{"category":"动物香调","star":false,"name":"麝香","code":"YLD5046","layer":"B","description":"像更厚一点、更暖一点的动物底香，比白麝香更成熟","pairing":["玫瑰","香草","檀香"]},{"category":"复合灵感调","star":true,"name":"奶茶店香（喜茶）","code":"YLD5190","layer":"T/M","description":"像刚开封的奶茶和杯盖香气，甜香直白，年轻用户一闻就懂","pairing":["牛奶","奶油","红茶"]},{"category":"复合灵感调","star":true,"name":"玫瑰乌龙","code":"YLD5199","layer":"M/B","description":"像热乌龙里泡进玫瑰花瓣，文艺、柔和、好讲故事","pairing":["荔枝","白麝香","檀香"]},{"category":"复合灵感调","star":true,"name":"竹兰","code":"YLD5209","layer":"M/B","description":"像竹林空气里飘一点淡淡兰香，清雅、很东方","pairing":["绿茶","白玉兰","雪松"]},{"category":"复合灵感调","star":false,"name":"玫瑰檀香","code":"YLD5215","layer":"M/B","description":"像一朵玫瑰放在温热木盒里，温柔又成熟","pairing":["荔枝","琥珀","白麝香"]},{"category":"复合灵感调","star":false,"name":"木质兰花","code":"YLD5210","layer":"M/B","description":"像兰花贴在干净木头上，适合喜欢安静木花调的人","pairing":["檀香","雪松","龙涎"]},{"category":"复合灵感调","star":false,"name":"自由绿野","code":"YLD5212","layer":"T","description":"像户外草地和风一起扑来，绿感直接，偏中性","pairing":["柑橘","绿叶","香根草"]}];
+
+    const surveyConfig = [
+      { id: 'impression', title: 'Q1. 你希望给别人什么样的第一印象？', multiple: false, options: ['清爽干净', '温柔甜美', '中性高级', '温暖有故事'] },
+      { id: 'scene', title: 'Q2. 主要用在什么场景？', multiple: false, options: ['日常通勤', '约会', '送礼', '运动户外'] },
+      { id: 'avoid', title: 'Q3. 你最不喜欢哪种味道？', multiple: true, hint: '可多选', options: ['太甜腻', '太冲鼻', '太老气', '太无聊'] },
+      { id: 'season', title: 'Q4. 季节偏好？', multiple: false, options: ['春夏清爽', '秋冬温暖', '四季通用'] },
+      { id: 'gender', title: 'Q5. 性别倾向？', multiple: false, options: ['偏女香', '偏男香', '中性都行'] }
+    ];
+
+    const categoryProfiles = {
+      '柑橘调': ['fresh', 'clean', 'commute', 'sport', 'neutral', 'spring'],
+      '绿叶 / 草本调': ['fresh', 'clean', 'sport', 'neutral', 'story', 'spring'],
+      '花香调': ['soft', 'gift', 'date', 'feminine', 'spring'],
+      '果香调': ['soft', 'gift', 'date', 'young', 'spring'],
+      '美食 / 酒饮调': ['warm', 'story', 'gift', 'date', 'sweet', 'winter'],
+      '木质调': ['neutral', 'premium', 'presence', 'commute', 'masculine', 'winter'],
+      '茶香调': ['clean', 'premium', 'commute', 'neutral', 'story', 'all'],
+      '东方 / 辛香 / 树脂调': ['warm', 'story', 'presence', 'premium', 'winter'],
+      '水生调': ['fresh', 'sport', 'clean', 'summer'],
+      '药香调': ['cool', 'premium', 'presence', 'neutral'],
+      '抽象 / 质感调': ['clean', 'premium', 'base'],
+      '动物香调': ['clean', 'presence', 'base', 'premium'],
+      '复合灵感调': ['easy', 'gift', 'story', 'premium']
+    };
+
+    const answerTags = {
+      impression: {
+        '清爽干净': ['fresh', 'clean', 'airy'],
+        '温柔甜美': ['soft', 'sweet', 'gift'],
+        '中性高级': ['neutral', 'premium', 'woody'],
+        '温暖有故事': ['warm', 'story', 'presence']
+      },
+      scene: {
+        '日常通勤': ['commute', 'clean', 'balanced'],
+        '约会': ['date', 'soft', 'presence'],
+        '送礼': ['gift', 'easy', 'soft'],
+        '运动户外': ['sport', 'fresh', 'cool']
+      },
+      season: {
+        '春夏清爽': ['spring', 'summer', 'fresh'],
+        '秋冬温暖': ['autumn', 'winter', 'warm'],
+        '四季通用': ['all', 'balanced', 'clean']
+      },
+      gender: {
+        '偏女香': ['feminine', 'soft', 'floral'],
+        '偏男香': ['masculine', 'woody', 'cool'],
+        '中性都行': ['neutral', 'premium', 'balanced']
+      }
+    };
+
+    const avoidRules = {
+      '太甜腻': ['sweet', 'dessert', 'heavy'],
+      '太冲鼻': ['sharp', 'spice', 'aromatic', 'cool'],
+      '太老气': ['mature', 'powder', 'resin', 'smoky'],
+      '太无聊': ['flat', 'safe']
+    };
+
+    const layerLabel = { T: '前调', M: '中调', B: '后调' };
+    const stepMeta = [
+      { title: '偏好问卷', mini: '建立你的闻香画像' },
+      { title: '系统推荐', mini: '筛出安全又有记忆点的候选' },
+      { title: '用户选香', mini: '挑出自己的前中后调' },
+      { title: '调比例', mini: '一键调整或手动微调' },
+      { title: '生成配方卡', mini: '保存你的专属版本' }
+    ];
+
+    const state = {
+      step: 1,
+      answers: { avoid: [] },
+      recommendations: { T: [], M: [], B: [] },
+      selected: { T: [], M: [], B: [] },
+      ratios: {},
+      formulaName: '未命名配方'
+    };
+
+    const surveyForm = document.getElementById('survey-form');
+    const recommendationArea = document.getElementById('recommendation-area');
+    const pickerArea = document.getElementById('picker-area');
+    const selectionSummary = document.getElementById('selection-summary');
+    const ratioSummary = document.getElementById('ratio-summary');
+    const sliderList = document.getElementById('slider-list');
+    const resultCard = document.getElementById('result-card');
+    const formulaNameInput = document.getElementById('formula-name');
+    const toast = document.getElementById('toast');
+
+    const enrichedPool = perfumePool.map(enrichItem);
+    const poolByName = new Map(enrichedPool.map(item => [item.name, item]));
+
+    renderSurvey();
+    bindActions();
+
+    function enrichItem(item) {
+      const tokens = new Set(categoryProfiles[item.category] || []);
+      const text = `${item.name} ${item.description} ${item.category} ${item.pairing.join(' ')}`;
+      const add = list => list.forEach(tag => tokens.add(tag));
+      if (/柑橘|柠檬|柚子|青柠|佛手柑|葡萄柚|西柚/.test(text)) add(['fresh', 'clean', 'sport', 'airy']);
+      if (/绿茶|龙井|乌龙|茶|竹|白玉兰|小苍兰|棉花|皂感|白麝香/.test(text)) add(['clean', 'balanced', 'easy']);
+      if (/桃|梨|荔枝|桂花|牡丹|玫瑰|花|樱花|莲花|洋甘菊|百合/.test(text)) add(['soft', 'gift']);
+      if (/雪松|檀香|香根草|琥珀木|龙涎|广藿香|乌木|橡木|冷杉|木/.test(text)) add(['premium', 'presence', 'neutral']);
+      if (/香草|奶油|牛奶|焦糖|蜂蜜|椰子|咖啡|奶茶店香|巧克力/.test(text)) add(['sweet', 'warm', 'dessert']);
+      if (/琥珀|乳香|没药|树脂|烟草|绒面革|红酒|烈酒/.test(text)) add(['warm', 'story', 'mature']);
+      if (/薄荷|尤加利|生姜|小豆蔻|肉桂|肉豆蔻|迷迭香|艾蒿/.test(text)) add(['cool', 'sharp', 'spice']);
+      if (/醛香|脂粉|鸢尾|橡木苔|土壤|灵芝|当归/.test(text)) add(['mature', 'story']);
+      if (/奶茶店香|自由绿野|竹兰|玫瑰乌龙|木质兰花|玫瑰檀香/.test(text)) add(['story', 'easy']);
+      if (/海藻|西瓜酮|黄瓜|莲花/.test(text)) add(['summer', 'fresh']);
+      if (item.star) add(['easy']);
+      if (tokens.has('soft') && !tokens.has('premium')) add(['safe']);
+      if (tokens.has('clean') && tokens.has('fresh')) add(['safe']);
+      if (item.layer.includes('B')) add(['base']);
+      return { ...item, tags: Array.from(tokens) };
+    }
+
+    function renderSurvey() {
+      surveyForm.innerHTML = surveyConfig.map(q => `
+        <div class="question">
+          <h3>${q.title}</h3>
+          ${q.hint ? `<div class="hint">${q.hint}</div>` : ''}
+          <div class="chips">
+            ${q.options.map(option => `
+              <button type="button" class="chip ${isSelected(q.id, option) ? 'active' : ''}" data-question="${q.id}" data-value="${option}">${option}</button>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+      surveyForm.querySelectorAll('.chip').forEach(button => {
+        button.addEventListener('click', () => handleAnswer(button.dataset.question, button.dataset.value));
+      });
+    }
+
+    function isSelected(questionId, option) {
+      const value = state.answers[questionId];
+      return Array.isArray(value) ? value.includes(option) : value === option;
+    }
+
+    function handleAnswer(questionId, value) {
+      const config = surveyConfig.find(item => item.id === questionId);
+      if (config.multiple) {
+        const set = new Set(state.answers[questionId] || []);
+        if (set.has(value)) set.delete(value); else set.add(value);
+        state.answers[questionId] = Array.from(set);
+      } else {
+        state.answers[questionId] = value;
+      }
+      renderSurvey();
+    }
+
+    function bindActions() {
+      document.getElementById('to-recommend').addEventListener('click', () => {
+        const missing = surveyConfig.filter(q => !state.answers[q.id] || (Array.isArray(state.answers[q.id]) && state.answers[q.id].length === 0));
+        if (missing.length) {
+          showToast('还有问题没选完');
+          return;
+        }
+        state.recommendations = makeRecommendations();
+        prefillSelection();
+        renderRecommendations();
+        renderPicker();
+        goStep(2);
+      });
+
+      document.getElementById('back-to-form').addEventListener('click', () => goStep(1));
+      document.getElementById('to-pick').addEventListener('click', () => { renderPicker(); goStep(3); });
+      document.getElementById('back-to-recommend').addEventListener('click', () => goStep(2));
+      document.getElementById('back-to-pick').addEventListener('click', () => goStep(3));
+
+      document.getElementById('to-ratio').addEventListener('click', () => {
+        if (!isSelectionValid()) {
+          showToast('请先选 1-2 个前调、1-2 个中调、1 个后调');
+          return;
+        }
+        if (!Object.keys(state.ratios).length) buildDefaultRatios();
+        renderRatioEditor();
+        goStep(4);
+      });
+
+      document.getElementById('to-result').addEventListener('click', () => {
+        renderResult();
+        goStep(5);
+      });
+
+      document.querySelectorAll('[data-preset]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          applyPreset(btn.dataset.preset);
+          renderRatioEditor();
+        });
+      });
+
+      formulaNameInput.addEventListener('input', () => {
+        state.formulaName = formulaNameInput.value.trim() || '未命名配方';
+        renderResult();
+      });
+
+      document.getElementById('share-formula').addEventListener('click', shareFormula);
+    }
+
+    function goStep(step) {
+      state.step = step;
+      document.querySelectorAll('.step').forEach(section => {
+        section.classList.toggle('active', Number(section.dataset.step) === step);
+      });
+      document.getElementById('progress-bar').style.width = `${step * 20}%`;
+      document.getElementById('step-caption').textContent = `Step ${step} / 5`;
+      document.getElementById('step-title').textContent = stepMeta[step - 1].title;
+      document.getElementById('step-mini').textContent = stepMeta[step - 1].mini;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectedTags() {
+      const tags = [];
+      Object.entries(answerTags).forEach(([question, map]) => {
+        const answer = state.answers[question];
+        if (answer && map[answer]) tags.push(...map[answer]);
+      });
+      return tags;
+    }
+
+    function penalties() {
+      return (state.answers.avoid || []).flatMap(item => avoidRules[item] || []);
+    }
+
+    function scoreItem(item, layer) {
+      let score = 0;
+      const tags = selectedTags();
+      const penaltyTags = penalties();
+      tags.forEach(tag => { if (item.tags.includes(tag)) score += 10; });
+      penaltyTags.forEach(tag => { if (item.tags.includes(tag)) score -= tag === 'flat' ? 4 : 8; });
+      if (item.star) score += 5;
+      if (item.tags.includes('easy')) score += 3;
+      if ((state.answers.scene === '日常通勤' || state.answers.scene === '送礼') && item.tags.includes('safe')) score += 4;
+      if (state.answers.impression === '中性高级' && item.tags.includes('premium')) score += 5;
+      if (state.answers.impression === '温暖有故事' && item.tags.includes('story')) score += 5;
+      if (state.answers.impression === '清爽干净' && item.tags.includes('fresh')) score += 5;
+      if (state.answers.impression === '温柔甜美' && item.tags.includes('soft')) score += 5;
+      if (state.answers.gender === '偏女香' && item.tags.includes('feminine')) score += 4;
+      if (state.answers.gender === '偏男香' && (item.tags.includes('masculine') || item.tags.includes('woody'))) score += 4;
+      if (state.answers.gender === '中性都行' && item.tags.includes('neutral')) score += 4;
+      if (state.answers.season === '春夏清爽' && (item.tags.includes('spring') || item.tags.includes('summer') || item.tags.includes('fresh'))) score += 4;
+      if (state.answers.season === '秋冬温暖' && (item.tags.includes('winter') || item.tags.includes('warm') || item.tags.includes('presence'))) score += 4;
+      if (state.answers.season === '四季通用' && item.tags.includes('balanced')) score += 4;
+      if (layer === 'T' && item.layer.includes('T')) score += 12;
+      if (layer === 'M' && item.layer.includes('M')) score += 12;
+      if (layer === 'B' && item.layer.includes('B')) score += 12;
+      if (layer === 'B' && item.tags.includes('base')) score += 10;
+      return score;
+    }
+
+    function makeRecommendations() {
+      const pick = (layer, count) => enrichedPool
+        .filter(item => item.layer.includes(layer))
+        .map(item => ({ ...item, score: scoreItem(item, layer) }))
+        .sort((a, b) => b.score - a.score || Number(b.star) - Number(a.star))
+        .slice(0, count);
+      return { T: pick('T', 3), M: pick('M', 3), B: pick('B', 2) };
+    }
+
+    function prefillSelection() {
+      state.selected = {
+        T: state.recommendations.T.slice(0, 2).map(item => item.name),
+        M: state.recommendations.M.slice(0, 1).map(item => item.name),
+        B: state.recommendations.B.slice(0, 1).map(item => item.name)
+      };
+      buildDefaultRatios();
+    }
+
+    function renderRecommendations() {
+      const blocks = [['T', '推荐前调'], ['M', '推荐中调'], ['B', '推荐后调']].map(([layer, title]) => `
+        <div class="note-block">
+          <div class="note-head"><h3>${title}</h3><span>${layer === 'B' ? '选 1 个即可' : '优先从这里开始'}</span></div>
+          <div class="note-list">
+            ${state.recommendations[layer].map(item => cardTemplate(item, true)).join('')}
+          </div>
+        </div>
+      `).join('');
+      recommendationArea.innerHTML = `<div class="grid">${blocks}</div>`;
+    }
+
+    function renderPicker() {
+      const sections = [['T', '前调', '选 1-2 个'], ['M', '中调', '选 1-2 个'], ['B', '后调', '选 1 个']].map(([layer, title, hint]) => `
+        <div class="note-block">
+          <div class="note-head"><h3>${title}</h3><span>${hint}</span></div>
+          <div class="recommend-grid">
+            ${state.recommendations[layer].map(item => selectableCard(item, layer)).join('')}
+          </div>
+          <div class="expand-block">
+            <button type="button" class="mini-btn" data-expand="${layer}">查看全部${title}</button>
+            <div class="all-pool" id="pool-${layer}">${renderPoolSections(layer)}</div>
+          </div>
+        </div>
+      `).join('');
+      pickerArea.innerHTML = sections;
+      pickerArea.querySelectorAll('.item-card').forEach(card => {
+        card.addEventListener('click', () => toggleSelection(card.dataset.name, card.dataset.layer));
+      });
+      pickerArea.querySelectorAll('.pool-pill').forEach(pill => {
+        pill.addEventListener('click', () => toggleSelection(pill.dataset.name, pill.dataset.layer));
+      });
+      pickerArea.querySelectorAll('[data-expand]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pool = document.getElementById(`pool-${btn.dataset.expand}`);
+          pool.classList.toggle('open');
+          const label = btn.dataset.expand === 'T' ? '前调' : btn.dataset.expand === 'M' ? '中调' : '后调';
+          btn.textContent = pool.classList.contains('open') ? `收起全部${label}` : `查看全部${label}`;
+        });
+      });
+      renderSelectionSummary();
+    }
+
+    function renderPoolSections(layer) {
+      const byCategory = enrichedPool.filter(item => item.layer.includes(layer)).reduce((acc, item) => {
+        (acc[item.category] ||= []).push(item);
+        return acc;
+      }, {});
+      return Object.entries(byCategory).map(([category, items]) => `
+        <div class="pool-section">
+          <h4>${category}</h4>
+          <div class="pool-list">
+            ${items.map(item => `<button type="button" class="pool-pill ${state.selected[layer].includes(item.name) ? 'selected' : ''}" data-name="${item.name}" data-layer="${layer}">${item.star ? '⭐ ' : ''}${item.name}</button>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectableCard(item, layer) {
+      return `
+        <article class="item-card ${state.selected[layer].includes(item.name) ? 'selected' : ''}" data-name="${item.name}" data-layer="${layer}">
+          ${itemTitle(item)}
+          <div class="meta"><span>${item.category}</span><span>${item.code}</span></div>
+          <p class="desc">${item.description}</p>
+        </article>
+      `;
+    }
+
+    function cardTemplate(item, withScore) {
+      const percent = Math.max(78, Math.min(98, item.score + 58));
+      return `
+        <article class="item-card">
+          ${itemTitle(item)}
+          <div class="meta"><span>${item.category}</span><span>${item.code}</span>${withScore ? `<span>匹配度 ${percent}%</span>` : ''}</div>
+          <p class="desc">${item.description}</p>
+        </article>
+      `;
+    }
+
+    function itemTitle(item) {
+      return `
+        <div class="item-title">
+          <strong>${item.name}</strong>
+          <span class="badge">${item.star ? '⭐ 推荐' : layerLabel[item.layer.split('/')[0]] || item.layer}</span>
+        </div>
+      `;
+    }
+
+    function toggleSelection(name, layer) {
+      const current = new Set(state.selected[layer]);
+      if (current.has(name)) {
+        current.delete(name);
+      } else {
+        if (layer === 'B' && current.size >= 1) {
+          showToast('后调先保留 1 个，避免尾韵打架');
+          return;
+        }
+        if ((layer === 'T' || layer === 'M') && current.size >= 2) {
+          showToast(`${layer === 'T' ? '前调' : '中调'}最多先选 2 个`);
+          return;
+        }
+        current.add(name);
+      }
+      state.selected[layer] = Array.from(current);
+      buildDefaultRatios();
+      renderPicker();
+    }
+
+    function isSelectionValid() {
+      return state.selected.T.length >= 1 && state.selected.T.length <= 2
+        && state.selected.M.length >= 1 && state.selected.M.length <= 2
+        && state.selected.B.length === 1;
+    }
+
+    function renderSelectionSummary() {
+      const detail = [
+        ['前调', state.selected.T],
+        ['中调', state.selected.M],
+        ['后调', state.selected.B]
+      ].map(([label, list]) => `<strong>${label}</strong>：${list.length ? list.join('、') : '还没选'}`).join('<br>');
+      const ready = isSelectionValid() ? '已满足进入下一步的条件。' : '还需要补齐 1-2 个前调、1-2 个中调、1 个后调。';
+      selectionSummary.innerHTML = `<p>${detail}<br><br>${ready}</p>`;
+    }
+
+    function buildDefaultRatios() {
+      const next = {};
+      assignLayerRatios('T', 30, next);
+      assignLayerRatios('M', 45, next);
+      assignLayerRatios('B', 25, next);
+      state.ratios = next;
+    }
+
+    function assignLayerRatios(layer, total, target) {
+      const picked = state.selected[layer];
+      if (!picked.length) return;
+      if (picked.length === 1) {
+        target[picked[0]] = total;
+        return;
+      }
+      target[picked[0]] = Math.round(total * 0.56);
+      target[picked[1]] = total - target[picked[0]];
+    }
+
+    function applyPreset(preset) {
+      const targets = preset === 'fresh'
+        ? { T: 40, M: 35, B: 25 }
+        : preset === 'soft'
+          ? { T: 28, M: 50, B: 22 }
+          : { T: 25, M: 40, B: 35 };
+      const next = {};
+      assignLayerRatios('T', targets.T, next);
+      assignLayerRatios('M', targets.M, next);
+      assignLayerRatios('B', targets.B, next);
+      state.ratios = next;
+    }
+
+    function getNormalizedRatios() {
+      const entries = Object.entries(state.ratios);
+      const total = entries.reduce((sum, [, value]) => sum + Number(value || 0), 0) || 1;
+      const normalized = Object.fromEntries(entries.map(([name, value]) => [name, Number(((value / total) * 100).toFixed(1))]));
+      const sum = Object.values(normalized).reduce((acc, value) => acc + value, 0);
+      if (entries.length) {
+        const lastKey = entries[entries.length - 1][0];
+        normalized[lastKey] = Number((normalized[lastKey] + (100 - sum)).toFixed(1));
+      }
+      return normalized;
+    }
+
+    function renderRatioEditor() {
+      const ratios = getNormalizedRatios();
+      const totals = { T: 0, M: 0, B: 0 };
+      Object.entries(ratios).forEach(([name, value]) => {
+        const layer = state.selected.T.includes(name) ? 'T' : state.selected.M.includes(name) ? 'M' : 'B';
+        totals[layer] += value;
+      });
+      ratioSummary.innerHTML = ['T', 'M', 'B'].map(layer => `
+        <div class="ratio-box">
+          <span>${layerLabel[layer]}</span>
+          <strong>${totals[layer].toFixed(1)}%</strong>
+        </div>
+      `).join('');
+      const ordered = [...state.selected.T, ...state.selected.M, ...state.selected.B];
+      sliderList.innerHTML = ordered.map(name => {
+        const item = poolByName.get(name);
+        return `
+          <div class="slider-card">
+            <div class="slider-top">
+              <div>
+                <strong>${item.name}</strong>
+                <span>${item.category} · ${item.code}</span>
+              </div>
+              <strong>${ratios[name].toFixed(1)}%</strong>
+            </div>
+            <input type="range" min="5" max="70" step="1" value="${Math.max(5, Math.round(state.ratios[name] || ratios[name]))}" data-slider="${name}">
+            <p class="small">${item.description}</p>
+          </div>
+        `;
+      }).join('');
+      sliderList.querySelectorAll('[data-slider]').forEach(input => {
+        input.addEventListener('input', () => {
+          state.ratios[input.dataset.slider] = Number(input.value);
+          renderRatioEditor();
+        });
+      });
+    }
+
+    function styleNarrative() {
+      const chosen = [...state.selected.T, ...state.selected.M, ...state.selected.B].map(name => poolByName.get(name));
+      const tagBag = new Set(chosen.flatMap(item => item ? item.tags : []));
+      const lines = [];
+      if (tagBag.has('fresh')) lines.push('前段有干净、透气的开场');
+      if (tagBag.has('soft')) lines.push('中段会更柔和亲近');
+      if (tagBag.has('premium')) lines.push('尾韵带一点克制的高级感');
+      if (tagBag.has('warm')) lines.push('整体会留下温热和故事感');
+      return lines.slice(0, 3).join('，') || '整体是平衡耐闻、容易进入日常的风格';
+    }
+
+    function renderResult() {
+      const ratios = getNormalizedRatios();
+      const ordered = [...state.selected.T, ...state.selected.M, ...state.selected.B];
+      const notes = ordered.map(name => {
+        const item = poolByName.get(name);
+        const layer = state.selected.T.includes(name) ? '前调' : state.selected.M.includes(name) ? '中调' : '后调';
+        return `
+          <div class="formula-row">
+            <div>
+              <strong>${item.name}</strong><br>
+              <span>${layer} · ${item.description}</span>
+            </div>
+            <strong>${ratios[name].toFixed(1)}%</strong>
+          </div>
+        `;
+      }).join('');
+      const dominant = [state.selected.T[0], state.selected.M[0], state.selected.B[0]].filter(Boolean).join(' / ');
+      resultCard.innerHTML = `
+        <article class="formula-card">
+          <div class="brand">LingXiu AI Perfume Lab</div>
+          <h3>${state.formulaName}</h3>
+          <p>主轴气味：${dominant}</p>
+          <div class="style-blurb">${styleNarrative()}。适合 ${state.answers.scene || '日常'} 场景，整体倾向“${state.answers.impression || '平衡耐闻'}”。</div>
+          <div class="formula-meta">${notes}</div>
+          <p class="small">基础灌装参考：30ml 成品可按 香精浓缩液 6ml + 定香剂 6ml + 酒精 18ml；10ml 成品可按 2ml + 2ml + 6ml。</p>
+        </article>
+      `;
+    }
+
+    async function shareFormula() {
+      renderResult();
+      const text = buildShareText();
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: `${state.formulaName}｜灵嗅AI调香室`, text });
+          return;
+        } catch (error) {
+          if (error && error.name === 'AbortError') return;
+        }
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('配方文案已复制');
+      } catch (error) {
+        showToast('当前环境不支持自动复制');
+      }
+    }
+
+    function buildShareText() {
+      const ratios = getNormalizedRatios();
+      const lines = [
+        `灵嗅AI调香室｜${state.formulaName}`,
+        `风格：${state.answers.impression} / ${state.answers.scene} / ${state.answers.season}`,
+        '',
+        '配方：'
+      ];
+      [...state.selected.T, ...state.selected.M, ...state.selected.B].forEach(name => {
+        const layer = state.selected.T.includes(name) ? '前调' : state.selected.M.includes(name) ? '中调' : '后调';
+        lines.push(`- ${layer} ${name} ${ratios[name].toFixed(1)}%`);
+      });
+      lines.push('');
+      lines.push(`描述：${styleNarrative()}。`);
+      return lines.join('\n');
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+  </script>
+</body>
+</html>
+
