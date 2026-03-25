@@ -3,30 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>灵嗅AI调香室｜AI定制香水DIY问卷</title>
+  <title>灵嗅AI调香室｜定制香水 DIY 问卷</title>
+  <meta name="description" content="灵嗅AI调香室定制香水问卷，从偏好测试到选香、调比例、生成配方卡，一步完成你的专属气息。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="灵嗅AI调香室｜定制香水 DIY 问卷">
+  <meta property="og:description" content="回答几道偏好题，生成你的专属香气配方卡。">
+  <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop stop-color='%23f8f2e9'/%3E%3Cstop offset='1' stop-color='%23e3d1b2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='630' rx='36' fill='url(%23g)'/%3E%3Ccircle cx='978' cy='126' r='126' fill='%23c9aa70' fill-opacity='.18'/%3E%3Ccircle cx='220' cy='520' r='170' fill='%238b6a43' fill-opacity='.08'/%3E%3Ctext x='96' y='246' fill='%2334261d' font-size='68' font-family='PingFang SC, Microsoft YaHei, sans-serif'%3E灵嗅AI调香室%3C/text%3E%3Ctext x='96' y='338' fill='%23665342' font-size='36' font-family='PingFang SC, Microsoft YaHei, sans-serif'%3E定制你的专属香气配方卡%3C/text%3E%3C/svg%3E">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop stop-color='%23f4e6cf'/%3E%3Cstop offset='1' stop-color='%23b89054'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='18' fill='%2334261d'/%3E%3Cpath d='M32 14c5.8 0 10.5 4.7 10.5 10.5 0 5.2-3.9 9.6-9 10.4V46h-3V34.9c-5.1-.8-9-5.2-9-10.4C21.5 18.7 26.2 14 32 14Zm0 3c-4.1 0-7.5 3.4-7.5 7.5S27.9 32 32 32s7.5-3.4 7.5-7.5S36.1 17 32 17Z' fill='url(%23a)'/%3E%3C/svg%3E">
   <style>
     :root {
-      --paper: rgba(255, 250, 242, 0.86);
-      --ink: #33261d;
-      --muted: #7b6858;
-      --line: rgba(91, 62, 38, 0.14);
-      --accent: #b89652;
-      --accent-deep: #8f6b2b;
+      --paper: rgba(255, 250, 242, 0.84);
+      --paper-strong: rgba(255, 252, 247, 0.92);
+      --ink: #31241c;
+      --ink-soft: #5f4c3d;
+      --muted: #826f60;
+      --line: rgba(96, 69, 48, 0.12);
+      --line-strong: rgba(143, 107, 43, 0.22);
+      --accent: #c4a36a;
+      --accent-soft: #ecd9b1;
+      --accent-deep: #8b6538;
       --brown: #4d382b;
-      --shadow: 0 24px 60px rgba(67, 46, 25, 0.12);
-      --radius: 24px;
+      --shadow: 0 30px 80px rgba(67, 46, 25, 0.12);
+      --shadow-soft: 0 18px 36px rgba(76, 53, 34, 0.08);
+      --radius: 28px;
+      --radius-sm: 20px;
       --transition: 320ms cubic-bezier(.22,1,.36,1);
+      --font-display: "Iowan Old Style", "Palatino Linotype", "Noto Serif SC", "Source Han Serif SC", serif;
+      --font-body: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     }
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
+    html { margin: 0; min-height: 100%; }
+    body { margin: 0; min-height: 100%; }
     body {
-      font-family: "Noto Serif SC", "Source Han Serif SC", "PingFang SC", "Hiragino Sans GB", serif;
+      font-family: var(--font-body);
       color: var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(201, 172, 111, 0.28), transparent 28%),
-        radial-gradient(circle at 85% 10%, rgba(110, 79, 52, 0.12), transparent 20%),
-        linear-gradient(180deg, #f8f3ea 0%, #f0e7da 100%);
+        radial-gradient(circle at top left, rgba(201, 172, 111, 0.26), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(110, 79, 52, 0.12), transparent 22%),
+        linear-gradient(180deg, #f8f4ed 0%, #f0e6d8 48%, #eee2d3 100%);
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
     body::before {
       content: "";
@@ -38,50 +56,113 @@
         linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
       background-size: 28px 28px;
       mask-image: linear-gradient(180deg, rgba(0,0,0,0.65), transparent 85%);
-      opacity: 0.22;
+      opacity: 0.18;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto -12vw -24vh auto;
+      width: 54vw;
+      height: 54vw;
+      min-width: 260px;
+      min-height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(196, 163, 106, 0.16), rgba(196, 163, 106, 0) 70%);
+      filter: blur(18px);
+      pointer-events: none;
     }
     .shell {
       width: min(100%, 760px);
       margin: 0 auto;
-      padding: 18px 14px 100px;
+      padding: 18px 14px 80px;
       position: relative;
     }
     .hero {
-      padding: 20px 8px 22px;
+      padding: 18px 8px 28px;
       position: relative;
     }
     .brand {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
-      border: 1px solid rgba(143, 107, 43, 0.22);
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid rgba(143, 107, 43, 0.18);
       border-radius: 999px;
-      background: rgba(255, 250, 242, 0.7);
-      backdrop-filter: blur(14px);
+      background: rgba(255, 250, 242, 0.72);
+      backdrop-filter: blur(16px);
       color: var(--accent-deep);
       font-size: 12px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
+      box-shadow: 0 10px 30px rgba(111, 82, 51, 0.08);
+    }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-size: 14px;
+      color: #fffaf3;
+      background: linear-gradient(135deg, #b79059, #8d683d);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .hero-copy {
+      max-width: 62ch;
+    }
+    .hero-kicker {
+      margin: 18px 0 0;
+      color: var(--accent-deep);
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
     }
     h1 {
-      margin: 20px 0 10px;
+      margin: 14px 0 14px;
       font-size: clamp(32px, 8vw, 52px);
-      line-height: 1.02;
-      letter-spacing: 0.02em;
+      line-height: 1.04;
+      letter-spacing: 0.03em;
       font-weight: 600;
+      font-family: var(--font-display);
     }
     .hero p {
       margin: 0;
       color: var(--muted);
       font-size: 15px;
-      line-height: 1.75;
+      line-height: 1.82;
       max-width: 56ch;
+    }
+    .hero-points {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .hero-pill {
+      min-height: 60px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(143, 107, 43, 0.14);
+      background: linear-gradient(180deg, rgba(255,255,255,0.56), rgba(255,248,240,0.38));
+      box-shadow: var(--shadow-soft);
+    }
+    .hero-pill strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .hero-pill span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
     }
     .panel {
       background: var(--paper);
       backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.68);
       box-shadow: var(--shadow);
       border-radius: var(--radius);
       overflow: hidden;
@@ -91,12 +172,15 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(140deg, rgba(255,255,255,0.5), transparent 38%);
+      background:
+        linear-gradient(140deg, rgba(255,255,255,0.52), transparent 38%),
+        radial-gradient(circle at top right, rgba(236, 217, 177, 0.22), transparent 28%);
       pointer-events: none;
     }
     .progress-wrap {
-      padding: 18px 18px 10px;
+      padding: 20px 18px 14px;
       border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0));
     }
     .progress-head {
       display: flex;
@@ -114,75 +198,137 @@
     }
     .progress-label strong {
       color: var(--ink);
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
     }
-    .progress-bar {
-      height: 8px;
+    .progress-label span {
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+      font-size: 11px;
+    }
+    .progress-mini {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      min-height: 36px;
       border-radius: 999px;
-      background: rgba(91, 62, 38, 0.08);
+      background: rgba(255,255,255,0.46);
+      border: 1px solid rgba(143, 107, 43, 0.12);
+      text-align: center;
+    }
+    .progress-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(91, 62, 38, 0.07);
       overflow: hidden;
+      position: relative;
     }
     .progress-bar span {
       display: block;
       height: 100%;
       width: 20%;
       border-radius: inherit;
-      background: linear-gradient(90deg, #d8be82, #9d7740);
-      transition: width var(--transition);
+      background: linear-gradient(90deg, #e2c98e, #9d7740);
+      box-shadow: 0 0 20px rgba(196, 163, 106, 0.34);
+      transition: width var(--transition), transform var(--transition);
+      transform-origin: left center;
     }
-    .stage-wrap { padding: 20px 16px 24px; }
-    .step { display: none; animation: rise var(--transition); }
+    .progress-steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .progress-dot {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(143, 107, 43, 0.1);
+      transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
+    }
+    .progress-dot.active {
+      background: linear-gradient(90deg, rgba(226, 201, 142, 0.92), rgba(157, 119, 64, 0.92));
+      box-shadow: 0 8px 18px rgba(157, 119, 64, 0.24);
+      transform: scaleY(1.2);
+    }
+    .stage-wrap { padding: 22px 16px 26px; position: relative; }
+    .step { display: none; animation: rise var(--transition); transform-origin: top center; }
     .step.active { display: block; }
     @keyframes rise {
-      from { opacity: 0; transform: translateY(18px); }
+      from { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.985); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .section-title { margin: 0 0 6px; font-size: 25px; font-weight: 600; }
-    .section-sub { margin: 0 0 22px; color: var(--muted); line-height: 1.7; font-size: 14px; }
-    .question { margin-bottom: 22px; }
-    .question h3 { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+    .section-title {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 5vw, 30px);
+      font-weight: 600;
+      font-family: var(--font-display);
+      letter-spacing: 0.02em;
+    }
+    .section-sub { margin: 0 0 24px; color: var(--muted); line-height: 1.8; font-size: 14px; }
+    .question {
+      margin-bottom: 18px;
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(143, 107, 43, 0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.44), rgba(255,255,255,0.22));
+    }
+    .question h3 { margin: 0 0 12px; font-size: 16px; font-weight: 600; line-height: 1.55; }
     .hint { color: var(--muted); font-size: 12px; margin-top: -4px; margin-bottom: 12px; }
     .chips, .quick-row { display: flex; flex-wrap: wrap; gap: 10px; }
     .chip, .quick-btn, .ghost-btn, .main-btn, .mini-btn {
       appearance: none;
       border: 1px solid var(--line);
-      background: rgba(255, 251, 245, 0.88);
+      background: rgba(255, 251, 245, 0.92);
       color: var(--ink);
       border-radius: 999px;
       padding: 12px 15px;
       font: inherit;
-      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
       cursor: pointer;
+      min-height: 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .chip::after, .quick-btn::after, .ghost-btn::after, .main-btn::after, .mini-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0));
+      pointer-events: none;
     }
     .chip:hover, .quick-btn:hover, .ghost-btn:hover, .main-btn:hover, .mini-btn:hover { transform: translateY(-1px); }
+    .chip:active, .quick-btn:active, .ghost-btn:active, .main-btn:active, .mini-btn:active { transform: translateY(0) scale(0.985); }
     .chip.active {
-      background: linear-gradient(135deg, rgba(184,150,82,0.18), rgba(143,107,43,0.18));
-      border-color: rgba(143,107,43,0.38);
-      box-shadow: 0 8px 24px rgba(143,107,43,0.12);
+      background: linear-gradient(135deg, rgba(239,225,191,0.78), rgba(214,186,131,0.34));
+      border-color: rgba(143,107,43,0.42);
+      box-shadow: 0 10px 22px rgba(143,107,43,0.12);
+      color: var(--accent-deep);
     }
-    .actions { display: flex; gap: 10px; margin-top: 26px; }
+    .actions { display: flex; gap: 10px; margin-top: 28px; }
     .main-btn {
       flex: 1;
-      background: linear-gradient(135deg, #4d382b, #7a5a3d);
+      background: linear-gradient(135deg, #4d382b, #76563a);
       color: #fff8ee;
       border-color: transparent;
-      box-shadow: 0 14px 32px rgba(77,56,43,0.24);
+      box-shadow: 0 16px 34px rgba(77,56,43,0.24);
       min-height: 50px;
     }
     .ghost-btn {
       flex: 1;
       color: var(--brown);
-      background: rgba(255,255,255,0.38);
+      background: rgba(255,255,255,0.44);
       min-height: 50px;
     }
     .grid { display: grid; gap: 14px; }
     .recommend-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
     .note-block {
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 14px;
-      background: rgba(255,255,255,0.45);
+      border: 1px solid rgba(96, 69, 48, 0.1);
+      border-radius: 22px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.48), rgba(255,252,248,0.32));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.46);
     }
     .note-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
     .note-head h3 { margin: 0; font-size: 17px; }
@@ -190,17 +336,38 @@
     .note-list { display: grid; gap: 12px; }
     .item-card {
       border: 1px solid rgba(91,62,38,0.11);
-      border-radius: 18px;
+      border-radius: 20px;
       padding: 14px;
-      background: rgba(255,250,242,0.88);
-      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      background: rgba(255,250,242,0.9);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
       cursor: pointer;
       position: relative;
+      overflow: hidden;
+    }
+    .item-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(155deg, rgba(255,255,255,0.26), transparent 32%);
+      pointer-events: none;
     }
     .item-card.selected {
       border-color: rgba(143,107,43,0.44);
-      box-shadow: 0 12px 26px rgba(143,107,43,0.12);
-      transform: translateY(-1px);
+      box-shadow: 0 18px 34px rgba(143,107,43,0.14);
+      transform: translate3d(0, -2px, 0);
+      background: linear-gradient(180deg, rgba(255,251,246,0.96), rgba(246,236,218,0.78));
+    }
+    .item-card.selected::before {
+      content: "已选中";
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: #fff9f1;
+      background: linear-gradient(135deg, #b78f54, #8e6637);
+      box-shadow: 0 10px 20px rgba(143,107,43,0.16);
     }
     .item-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
     .item-title strong { font-size: 16px; font-weight: 600; }
@@ -212,17 +379,17 @@
       border-radius: 999px;
       font-size: 11px;
       color: var(--accent-deep);
-      background: rgba(184,150,82,0.16);
-      border: 1px solid rgba(143,107,43,0.2);
+      background: rgba(184,150,82,0.14);
+      border: 1px solid rgba(143,107,43,0.16);
       flex-shrink: 0;
     }
     .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
-    .desc { margin: 0; color: var(--ink); line-height: 1.7; font-size: 13px; }
+    .desc { margin: 0; color: var(--ink-soft); line-height: 1.78; font-size: 13px; }
     .expand-block { margin-top: 18px; }
     .all-pool { display: none; margin-top: 12px; gap: 12px; }
     .all-pool.open { display: grid; }
     .pool-section { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: rgba(255,255,255,0.35); }
-    .pool-section h4 { margin: 0 0 10px; font-size: 15px; }
+    .pool-section h4 { margin: 0 0 10px; font-size: 15px; font-family: var(--font-display); }
     .pool-list { display: flex; flex-wrap: wrap; gap: 8px; }
     .pool-pill {
       border: 1px solid rgba(91,62,38,0.12);
@@ -231,14 +398,21 @@
       font-size: 13px;
       background: rgba(255,250,242,0.8);
       cursor: pointer;
+      min-height: 40px;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
     }
-    .pool-pill.selected { background: rgba(184,150,82,0.18); border-color: rgba(143,107,43,0.35); }
+    .pool-pill:hover { transform: translateY(-1px); }
+    .pool-pill.selected {
+      background: linear-gradient(135deg, rgba(239,225,191,0.78), rgba(214,186,131,0.34));
+      border-color: rgba(143,107,43,0.35);
+      box-shadow: 0 10px 18px rgba(143,107,43,0.1);
+    }
     .selection-summary {
       margin: 16px 0 0;
-      border: 1px dashed rgba(143,107,43,0.32);
-      border-radius: 18px;
-      padding: 14px;
-      background: rgba(255,250,242,0.6);
+      border: 1px dashed rgba(143,107,43,0.28);
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255,250,242,0.66);
     }
     .selection-summary p { margin: 0; color: var(--muted); line-height: 1.7; font-size: 13px; }
     .selection-summary strong { color: var(--ink); }
@@ -289,23 +463,116 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .ratio-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
-    .ratio-box { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: rgba(255,255,255,0.42); }
+    .ratio-box {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.28));
+      box-shadow: var(--shadow-soft);
+    }
     .ratio-box span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
-    .ratio-box strong { font-size: 24px; font-weight: 600; }
+    .ratio-box strong { font-size: 24px; font-weight: 600; font-family: var(--font-display); }
     .slider-list { display: grid; gap: 14px; margin-top: 18px; }
-    .slider-card { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: rgba(255,255,255,0.48); }
+    .slider-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.54), rgba(255,255,255,0.3));
+      box-shadow: var(--shadow-soft);
+    }
     .slider-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 12px; }
     .slider-top strong { font-size: 15px; }
     .slider-top span { color: var(--muted); font-size: 12px; }
-    input[type="range"] { width: 100%; accent-color: var(--accent-deep); }
-    .formula-card {
-      padding: 18px;
-      border-radius: 24px;
-      background: linear-gradient(160deg, rgba(255,251,245,0.92), rgba(241,229,211,0.88));
-      border: 1px solid rgba(143,107,43,0.18);
-      box-shadow: 0 18px 40px rgba(78,56,36,0.12);
+    .slider-value {
+      min-width: 68px;
+      text-align: right;
+      font-size: 18px;
+      color: var(--accent-deep);
+      font-family: var(--font-display);
     }
-    .formula-card h3 { margin: 0; font-size: 30px; font-weight: 600; }
+    .range-wrap {
+      position: relative;
+      padding-top: 8px;
+    }
+    .range-track {
+      position: absolute;
+      inset: 18px 0 auto;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(196,163,106,0.18), rgba(139,101,56,0.08));
+      pointer-events: none;
+    }
+    .range-fill {
+      position: absolute;
+      left: 0;
+      top: 18px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #e0c78d, #9a7440);
+      box-shadow: 0 6px 16px rgba(157, 119, 64, 0.22);
+      pointer-events: none;
+      transform-origin: left center;
+    }
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      background: transparent;
+      margin: 0;
+      height: 28px;
+      position: relative;
+      z-index: 1;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      background: transparent;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-top: -6px;
+      border: 2px solid #fff9f0;
+      background: linear-gradient(135deg, #b89157, #7f5c34);
+      box-shadow: 0 10px 18px rgba(77,56,43,0.22);
+    }
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      background: transparent;
+      border: 0;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #fff9f0;
+      background: linear-gradient(135deg, #b89157, #7f5c34);
+      box-shadow: 0 10px 18px rgba(77,56,43,0.22);
+    }
+    .formula-card {
+      padding: 22px 18px 20px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at top right, rgba(232, 214, 177, 0.34), transparent 28%),
+        linear-gradient(160deg, rgba(255,251,245,0.96), rgba(241,229,211,0.88));
+      border: 1px solid rgba(143,107,43,0.18);
+      box-shadow: 0 24px 52px rgba(78,56,36,0.14);
+      position: relative;
+      overflow: hidden;
+    }
+    .formula-card::after {
+      content: "LingXiu AI Perfume Lab";
+      position: absolute;
+      right: -16px;
+      bottom: 12px;
+      font-size: 22px;
+      letter-spacing: 0.16em;
+      color: rgba(139, 101, 56, 0.08);
+      transform: rotate(-8deg);
+      font-family: var(--font-display);
+      pointer-events: none;
+    }
+    .formula-card h3 { margin: 10px 0 0; font-size: 30px; font-weight: 600; font-family: var(--font-display); }
     .formula-card p { margin: 8px 0 0; color: var(--muted); line-height: 1.75; }
     .formula-meta { display: grid; gap: 10px; margin: 18px 0; }
     .formula-row { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(91,62,38,0.09); }
@@ -320,11 +587,12 @@
       color: var(--ink);
       font: inherit;
       margin-bottom: 18px;
+      min-height: 48px;
     }
     .style-blurb {
       padding: 14px;
       border-radius: 18px;
-      background: rgba(184,150,82,0.12);
+      background: linear-gradient(135deg, rgba(184,150,82,0.14), rgba(255,247,233,0.44));
       color: var(--brown);
       line-height: 1.75;
       font-size: 14px;
@@ -396,25 +664,32 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(31, 23, 18, 0.5);
+      background: rgba(31, 23, 18, 0.52);
+      backdrop-filter: blur(8px);
       z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      animation: fadeIn 220ms ease;
     }
     .modal-card {
       width: min(100%, 520px);
       max-height: min(88vh, 760px);
       overflow: auto;
-      background: #fffaf2;
-      border-radius: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(236, 217, 177, 0.3), transparent 30%),
+        #fffaf2;
+      border-radius: 28px;
       padding: 24px 20px;
       box-shadow: 0 24px 60px rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.6);
+      animation: rise var(--transition);
     }
     .modal-card h3 {
       margin: 0 0 10px;
       font-size: 24px;
+      font-family: var(--font-display);
     }
     .modal-card p {
       margin: 0;
@@ -438,21 +713,154 @@
       gap: 10px;
       margin-top: 18px;
     }
+    .success-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.58);
+      border: 1px solid rgba(143,107,43,0.12);
+      color: var(--accent-deep);
+      margin-bottom: 14px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .success-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      color: #fff8ef;
+      background: linear-gradient(135deg, #be9b63, #7c5b35);
+      box-shadow: 0 10px 18px rgba(143,107,43,0.18);
+    }
+    .footer-brand {
+      margin-top: 22px;
+      padding: 0 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      letter-spacing: 0.06em;
+    }
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(250, 245, 237, 0.82);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+      z-index: 5;
+    }
+    .loading-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .loading-card {
+      min-width: min(88vw, 320px);
+      padding: 22px 20px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,249,242,0.76));
+      border: 1px solid rgba(143,107,43,0.14);
+      box-shadow: 0 24px 50px rgba(77,56,43,0.14);
+      text-align: center;
+    }
+    .loading-spinner {
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(184,150,82,0.18);
+      border-top-color: #9d7740;
+      animation: spin 900ms linear infinite;
+    }
+    .loading-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-family: var(--font-display);
+      font-size: 18px;
+    }
+    .loading-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
     @media (min-width: 700px) {
-      .shell { padding: 34px 24px 120px; }
+      .shell { padding: 34px 24px 96px; }
       .stage-wrap { padding: 28px 24px 30px; }
       .recommend-grid { grid-template-columns: 1fr 1fr; }
       .all-pool.open { grid-template-columns: 1fr 1fr 1fr; }
       .formula-meta { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 699px) {
+      .progress-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .progress-mini {
+        align-self: flex-start;
+      }
+      .hero-points {
+        grid-template-columns: 1fr;
+      }
+      .actions {
+        flex-direction: column;
+      }
+      .ratio-summary {
+        grid-template-columns: 1fr;
+      }
+      .shell {
+        padding-bottom: calc(88px + env(safe-area-inset-bottom));
+      }
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <section class="hero">
-      <div class="brand">灵嗅AI调香室</div>
-      <h1>AI定制香水<br>DIY问卷</h1>
-      <p>先回答几道偏好题，系统会从完整香精池里给你推荐一组安全又有个性的前中后调。你可以继续自由改配，最后生成自己的专属配方卡。</p>
+      <div class="brand"><span class="brand-mark">灵</span> 灵嗅AI调香室</div>
+      <div class="hero-copy">
+        <div class="hero-kicker">Scent Portrait · Crafted For You</div>
+        <h1>把偏好、情绪与场景<br>调成一支真正能下单的香</h1>
+        <p>回答几道简单问题，系统会先给你一版更稳、更好闻的候选组合。接下来你可以继续选香、调比例，最后生成一张像品牌配方卡一样精致的专属记录。</p>
+        <div class="hero-points">
+          <div class="hero-pill">
+            <strong>164 款香精池</strong>
+            <span>从完整池里筛选，不做随机推送。</span>
+          </div>
+          <div class="hero-pill">
+            <strong>一步步引导</strong>
+            <span>从问卷到比例调整，适合第一次 DIY。</span>
+          </div>
+          <div class="hero-pill">
+            <strong>可分享配方卡</strong>
+            <span>生成后可以截图、分享或直接下单。</span>
+          </div>
+        </div>
+      </div>
     </section>
 
     <main class="panel">
@@ -462,15 +870,22 @@
             <span id="step-caption">Step 1 / 5</span>
             <strong id="step-title">偏好问卷</strong>
           </div>
-          <span id="step-mini">建立你的闻香画像</span>
+          <span class="progress-mini" id="step-mini">建立你的闻香画像</span>
         </div>
         <div class="progress-bar"><span id="progress-bar"></span></div>
+        <div class="progress-steps" id="progress-steps">
+          <span class="progress-dot active"></span>
+          <span class="progress-dot"></span>
+          <span class="progress-dot"></span>
+          <span class="progress-dot"></span>
+          <span class="progress-dot"></span>
+        </div>
       </div>
 
       <div class="stage-wrap">
         <section class="step active" data-step="1">
-          <h2 class="section-title">先让系统知道你想闻起来像什么</h2>
-          <p class="section-sub">问卷会把你的场景、气质和雷区换成推荐标签。推荐逻辑基于完整香精池的香调分类和生活化描述匹配，不做随机推送。</p>
+          <h2 class="section-title">先告诉我，你想把自己调成怎样的气息</h2>
+          <p class="section-sub">这里不会考你香水知识。你只需要选出更接近你的场景、气质和雷区，系统会把这些偏好换成更适合你的推荐标签。</p>
           <div id="survey-form"></div>
           <div class="actions">
             <button class="main-btn" id="to-recommend">生成我的推荐</button>
@@ -478,8 +893,8 @@
         </section>
 
         <section class="step" data-step="2">
-          <h2 class="section-title">系统给你的第一版候选</h2>
-          <p class="section-sub">下面是系统从完整香精池中筛出来的推荐前调、中调、后调。优先给你好懂、好搭、低翻车的组合。</p>
+          <h2 class="section-title">这是系统先替你打好的第一版底稿</h2>
+          <p class="section-sub">我先帮你把完整香精池筛成一组更安全、也更容易出高级感的前中后调。你可以直接用，也可以继续往更个性的方向修改。</p>
           <div id="recommendation-area"></div>
           <div class="actions">
             <button class="ghost-btn" id="back-to-form">返回修改问卷</button>
@@ -488,8 +903,8 @@
         </section>
 
         <section class="step" data-step="3">
-          <h2 class="section-title">从推荐里选出你的前中后调</h2>
-          <p class="section-sub">规则：前调选 1-2 个，中调选 1-2 个，后调选 1 个。你也可以展开完整香精池，自由替换成更个性的一版。</p>
+          <h2 class="section-title">挑出真正属于你的前中后调</h2>
+          <p class="section-sub">建议从推荐列表开始。前调选 1-2 个，中调选 1-2 个，后调选 1 个；如果你想更有个人风格，也可以展开完整香精池自由替换。</p>
           <div id="picker-area"></div>
           <div class="selection-summary" id="selection-summary"></div>
           <div class="insight-board" id="picker-insights"></div>
@@ -500,8 +915,8 @@
         </section>
 
         <section class="step" data-step="4">
-          <h2 class="section-title">让这支香更像你</h2>
-          <p class="section-sub">默认采用新手友好的平衡耐闻型比例。你可以一键往不同风格方向推，也可以手动拖动每个香精的占比微调。</p>
+          <h2 class="section-title">现在，把它调得更像你一点</h2>
+          <p class="section-sub">默认是一版新手友好、平衡耐闻的结构。你可以直接选一个风格方向，也可以手动拖动每个香精，让主角感更明确。</p>
           <div class="quick-row">
             <button class="quick-btn" data-preset="fresh">更清爽</button>
             <button class="quick-btn" data-preset="soft">更温柔</button>
@@ -518,8 +933,8 @@
         </section>
 
         <section class="step" data-step="5">
-          <h2 class="section-title">你的专属配方卡</h2>
-          <p class="section-sub">这是一张可以直接拿去下单、复购和二次调整的配方记录。你也可以先复制文案发给朋友。</p>
+          <h2 class="section-title">你的专属配方卡已经完成</h2>
+          <p class="section-sub">这张卡可以直接拿去下单、复购，或留作下一次微调的底稿。你也可以先分享给朋友，看看他们最想闻哪一版的你。</p>
           <input id="formula-name" class="name-input" maxlength="24" placeholder="给这支香起个名字，比如：白衬衫后的风">
           <div id="result-card"></div>
           <div class="actions">
@@ -527,8 +942,18 @@
             <button class="main-btn" id="order-btn" style="cursor:pointer;" onclick="handleOrder()">下单</button>
           </div>
         </section>
+
+        <div class="loading-overlay" id="loading-overlay" aria-hidden="true">
+          <div class="loading-card">
+            <div class="loading-spinner"></div>
+            <strong>正在计算你的推荐方向</strong>
+            <p>我会优先筛出更稳、更有记忆点，也更适合新手入门的组合。</p>
+          </div>
+        </div>
       </div>
     </main>
+
+    <footer class="footer-brand">灵嗅AI调香室 · 属于你的独特气息</footer>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -608,6 +1033,7 @@
     const WEBHOOK_URL = '';
     const OWNER_WECHAT_ID = '';
     const OWNER_WECHAT_URL = '';
+    const SESSION_KEY = 'lingxiu_perfume_session_v1';
     const stepMeta = [
       { title: '偏好问卷', mini: '建立你的闻香画像' },
       { title: '系统推荐', mini: '筛出安全又有记忆点的候选' },
@@ -714,13 +1140,17 @@
     const adminEntry = document.getElementById('admin-entry');
     const adminPanel = document.getElementById('admin-panel');
     const adminOrders = document.getElementById('admin-orders');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const progressSteps = document.getElementById('progress-steps');
 
     const enrichedPool = perfumePool.map(enrichItem);
     const poolByName = new Map(enrichedPool.map(item => [item.name, item]));
     const pairingKnowledge = buildPairingKnowledge(enrichedPool);
 
+    restoreSession();
     renderSurvey();
     bindActions();
+    syncUIFromState();
 
     function enrichItem(item) {
       const tokens = new Set(categoryProfiles[item.category] || []);
@@ -870,6 +1300,50 @@
       );
     }
 
+    function saveSession() {
+      try {
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
+      } catch (error) {}
+    }
+
+    function restoreSession() {
+      try {
+        const raw = sessionStorage.getItem(SESSION_KEY);
+        if (!raw) return;
+        const cached = JSON.parse(raw);
+        if (!cached || typeof cached !== 'object') return;
+        state.step = Math.min(5, Math.max(1, Number(cached.step) || 1));
+        state.answers = { avoid: [], ...(cached.answers || {}) };
+        state.recommendations = cached.recommendations || { T: [], M: [], B: [] };
+        state.selected = cached.selected || { T: [], M: [], B: [] };
+        state.ratios = cached.ratios || {};
+        state.formulaName = cached.formulaName || '未命名配方';
+        state.lastTouched = cached.lastTouched || null;
+      } catch (error) {}
+    }
+
+    function syncUIFromState() {
+      formulaNameInput.value = state.formulaName === '未命名配方' ? '' : state.formulaName;
+      if (state.recommendations.T.length || state.recommendations.M.length || state.recommendations.B.length) {
+        renderRecommendations();
+      }
+      if (state.selected.T.length || state.selected.M.length || state.selected.B.length) {
+        renderPicker();
+      }
+      if (Object.keys(state.ratios).length && state.selected.B.length) {
+        renderRatioEditor();
+      }
+      if (state.selected.B.length) {
+        renderResult();
+      }
+      goStep(state.step, false);
+    }
+
+    function setLoading(show) {
+      loadingOverlay.classList.toggle('show', show);
+      loadingOverlay.setAttribute('aria-hidden', show ? 'false' : 'true');
+    }
+
     function buildPickerInsights() {
       const selectedNames = getSelectedNames();
       const selectedSet = new Set(selectedNames);
@@ -998,20 +1472,27 @@
         state.answers[questionId] = value;
       }
       renderSurvey();
+      saveSession();
     }
 
     function bindActions() {
-      document.getElementById('to-recommend').addEventListener('click', () => {
+      document.getElementById('to-recommend').addEventListener('click', async () => {
         const missing = surveyConfig.filter(q => !state.answers[q.id] || (Array.isArray(state.answers[q.id]) && state.answers[q.id].length === 0));
         if (missing.length) {
           showToast('还有问题没选完');
           return;
         }
-        state.recommendations = makeRecommendations();
-        prefillSelection();
-        renderRecommendations();
-        renderPicker();
-        goStep(2);
+        setLoading(true);
+        try {
+          await new Promise(resolve => window.setTimeout(resolve, 560));
+          state.recommendations = makeRecommendations();
+          prefillSelection();
+          renderRecommendations();
+          renderPicker();
+          goStep(2);
+        } finally {
+          setLoading(false);
+        }
       });
 
       document.getElementById('back-to-form').addEventListener('click', () => goStep(1));
@@ -1044,13 +1525,14 @@
       formulaNameInput.addEventListener('input', () => {
         state.formulaName = formulaNameInput.value.trim() || '未命名配方';
         renderResult();
+        saveSession();
       });
 
       document.getElementById('share-formula').addEventListener('click', shareFormula);
       bindAdminEntry();
     }
 
-    function goStep(step) {
+    function goStep(step, shouldScroll = true) {
       state.step = step;
       document.querySelectorAll('.step').forEach(section => {
         section.classList.toggle('active', Number(section.dataset.step) === step);
@@ -1059,7 +1541,11 @@
       document.getElementById('step-caption').textContent = `Step ${step} / 5`;
       document.getElementById('step-title').textContent = stepMeta[step - 1].title;
       document.getElementById('step-mini').textContent = stepMeta[step - 1].mini;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      Array.from(progressSteps.children).forEach((dot, index) => {
+        dot.classList.toggle('active', index < step);
+      });
+      saveSession();
+      if (shouldScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function selectedTags() {
@@ -1229,6 +1715,7 @@
       state.selected[layer] = Array.from(current);
       buildDefaultRatios();
       renderPicker();
+      saveSession();
     }
 
     function isSelectionValid() {
@@ -1243,7 +1730,7 @@
         ['中调', state.selected.M],
         ['后调', state.selected.B]
       ].map(([label, list]) => `<strong>${label}</strong>：${list.length ? list.join('、') : '还没选'}`).join('<br>');
-      const ready = isSelectionValid() ? '已满足进入下一步的条件。' : '还需要补齐 1-2 个前调、1-2 个中调、1 个后调。';
+      const ready = isSelectionValid() ? '已经可以进入下一步了，这一版的骨架很完整。' : '再补齐 1-2 个前调、1-2 个中调和 1 个后调，就能开始调比例。';
       selectionSummary.innerHTML = `<p>${detail}<br><br>${ready}</p>`;
     }
 
@@ -1253,6 +1740,7 @@
       assignLayerRatios('M', 45, next);
       assignLayerRatios('B', 25, next);
       state.ratios = next;
+      saveSession();
     }
 
     function assignLayerRatios(layer, total, target) {
@@ -1277,6 +1765,7 @@
       assignLayerRatios('M', targets.M, next);
       assignLayerRatios('B', targets.B, next);
       state.ratios = next;
+      saveSession();
     }
 
     function getNormalizedRatios() {
@@ -1294,15 +1783,12 @@
     function renderRatioEditor() {
       const ratios = getNormalizedRatios();
       const totals = getLayerTotals(ratios);
-      ratioSummary.innerHTML = ['T', 'M', 'B'].map(layer => `
-        <div class="ratio-box">
-          <span>${layerLabel[layer]}</span>
-          <strong>${totals[layer].toFixed(1)}%</strong>
-        </div>
-      `).join('');
+      renderRatioSummary(totals);
       const ordered = [...state.selected.T, ...state.selected.M, ...state.selected.B];
       sliderList.innerHTML = ordered.map(name => {
         const item = poolByName.get(name);
+        const currentValue = Math.max(5, Math.round(state.ratios[name] || ratios[name]));
+        const fillPercent = ((currentValue - 5) / 65) * 100;
         return `
           <div class="slider-card">
             <div class="slider-top">
@@ -1310,9 +1796,13 @@
                 <strong>${item.name}</strong>
                 <span>${item.category} · ${item.code}</span>
               </div>
-              <strong>${ratios[name].toFixed(1)}%</strong>
+              <strong class="slider-value">${ratios[name].toFixed(1)}%</strong>
             </div>
-            <input type="range" min="5" max="70" step="1" value="${Math.max(5, Math.round(state.ratios[name] || ratios[name]))}" data-slider="${name}">
+            <div class="range-wrap">
+              <div class="range-track"></div>
+              <div class="range-fill" style="width:${fillPercent}%"></div>
+              <input type="range" min="5" max="70" step="1" value="${currentValue}" data-slider="${name}">
+            </div>
             <p class="small">${item.description}</p>
           </div>
         `;
@@ -1321,9 +1811,42 @@
         input.addEventListener('input', () => {
           state.ratios[input.dataset.slider] = Number(input.value);
           state.lastTouched = { name: input.dataset.slider, action: 'ratio' };
-          renderRatioEditor();
+          refreshRatioFeedback(input.dataset.slider);
+          saveSession();
         });
       });
+      updateRatioInsights(totals, ratios);
+    }
+
+    function renderRatioSummary(totals) {
+      ratioSummary.innerHTML = ['T', 'M', 'B'].map(layer => `
+        <div class="ratio-box">
+          <span>${layerLabel[layer]}</span>
+          <strong>${totals[layer].toFixed(1)}%</strong>
+        </div>
+      `).join('');
+    }
+
+    function refreshRatioFeedback(changedName) {
+      const ratios = getNormalizedRatios();
+      const totals = getLayerTotals(ratios);
+      if (changedName) {
+        const input = sliderList.querySelector(`[data-slider="${changedName}"]`);
+        const card = input?.closest('.slider-card');
+        const valueEl = card?.querySelector('.slider-value');
+        const fillEl = card?.querySelector('.range-fill');
+        if (valueEl) valueEl.textContent = `${ratios[changedName].toFixed(1)}%`;
+        if (fillEl && input) {
+          fillEl.style.width = `${((Number(input.value) - 5) / 65) * 100}%`;
+        }
+      }
+      sliderList.querySelectorAll('[data-slider]').forEach(input => {
+        const name = input.dataset.slider;
+        const card = input.closest('.slider-card');
+        const valueEl = card?.querySelector('.slider-value');
+        if (valueEl) valueEl.textContent = `${ratios[name].toFixed(1)}%`;
+      });
+      renderRatioSummary(totals);
       updateRatioInsights(totals, ratios);
     }
 
@@ -1357,10 +1880,10 @@
       const dominant = [state.selected.T[0], state.selected.M[0], state.selected.B[0]].filter(Boolean).join(' / ');
       resultCard.innerHTML = `
         <article class="formula-card">
-          <div class="brand">LingXiu AI Perfume Lab</div>
+          <div class="brand"><span class="brand-mark">灵</span> LingXiu AI Perfume Lab</div>
           <h3>${state.formulaName}</h3>
           <p>主轴气味：${dominant}</p>
-          <div class="style-blurb">${styleNarrative()}。适合 ${state.answers.scene || '日常'} 场景，整体倾向“${state.answers.impression || '平衡耐闻'}”。</div>
+          <div class="style-blurb">${styleNarrative()}。更适合 ${state.answers.scene || '日常'} 场景，整体会给人“${state.answers.impression || '平衡耐闻'}”的第一印象。</div>
           <div class="formula-meta">${notes}</div>
           <p class="small">基础灌装参考：30ml 成品可按 香精浓缩液 6ml + 定香剂 6ml + 酒精 18ml；10ml 成品可按 2ml + 2ml + 6ml。</p>
         </article>
@@ -1516,9 +2039,10 @@
       const card = document.createElement('div');
       card.className = 'modal-card';
       card.innerHTML = `
+        <div class="success-badge"><span class="success-icon">✓</span> Order Saved</div>
         <h3>下单成功</h3>
         <p>订单号：<strong>${order.id}</strong></p>
-        <p style="margin-top:8px;">配方已${copied ? '' : '尝试'}复制到剪贴板，请发送给我们的客服确认订单。</p>
+        <p style="margin-top:8px;">这张配方已经为你存档。配方文案已${copied ? '' : '尝试'}复制到剪贴板，你可以直接发送给客服确认订单。</p>
         <div class="order-text">${formattedText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
         <div class="modal-actions">
           <button type="button" class="main-btn" data-action="copy">复制配方</button>
