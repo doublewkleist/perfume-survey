@@ -385,7 +385,7 @@
           <div id="result-card"></div>
           <div class="actions">
             <button class="ghost-btn" id="share-formula">分享</button>
-            <a class="main-btn" id="order-link" href="https://example.com/order" target="_blank" rel="noreferrer" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">下单</a>
+            <button class="main-btn" id="order-btn" style="cursor:pointer;" onclick="handleOrder()">下单</button>
           </div>
         </section>
       </div>
@@ -947,6 +947,55 @@
       toast.classList.add('show');
       clearTimeout(showToast.timer);
       showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function handleOrder() {
+      // 收集配方数据
+      const name = document.getElementById('formula-name-input')?.value || '我的专属香水';
+      const ordered = [...state.selected.T, ...state.selected.M, ...state.selected.B];
+      const formula = ordered.map(n => {
+        const item = perfumePool.find(p => p.name === n);
+        return { name: n, code: item?.code || '', layer: item?.layer || '', ratio: state.ratios[n] || 0 };
+      });
+      const totalT = ordered.filter(n => perfumePool.find(p=>p.name===n)?.layer?.includes('T')).reduce((s,n) => s+(state.ratios[n]||0), 0);
+      const totalM = ordered.filter(n => perfumePool.find(p=>p.name===n)?.layer?.includes('M')).reduce((s,n) => s+(state.ratios[n]||0), 0);
+      const totalB = ordered.filter(n => perfumePool.find(p=>p.name===n)?.layer?.includes('B')).reduce((s,n) => s+(state.ratios[n]||0), 0);
+
+      const order = {
+        id: 'LS-' + Date.now().toString(36).toUpperCase(),
+        name: name,
+        formula: formula,
+        ratioSummary: { T: totalT, M: totalM, B: totalB },
+        answers: state.answers,
+        createdAt: new Date().toLocaleString('zh-CN'),
+      };
+
+      // 存到 localStorage
+      const orders = JSON.parse(localStorage.getItem('perfume_orders') || '[]');
+      orders.push(order);
+      localStorage.setItem('perfume_orders', JSON.stringify(orders));
+
+      // 弹出成功提示
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease';
+      const card = document.createElement('div');
+      card.style.cssText = 'background:#fffaf2;border-radius:24px;padding:32px 28px;max-width:340px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2)';
+      card.innerHTML = `
+        <div style="font-size:48px;margin-bottom:12px">🎉</div>
+        <h3 style="margin:0 0 8px;font-size:22px;color:#33261d">下单成功！</h3>
+        <p style="color:#7b6858;font-size:14px;line-height:1.7;margin:0 0 6px">
+          订单号：<b>${order.id}</b>
+        </p>
+        <p style="color:#7b6858;font-size:14px;line-height:1.7;margin:0 0 16px">
+          「${name}」的配方已保存<br>我们会尽快为你调配 ✨
+        </p>
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="background:#b89652;color:#fff;border:none;border-radius:999px;padding:12px 36px;font-size:15px;cursor:pointer;font-weight:600">好的</button>
+      `;
+      overlay.appendChild(card);
+      overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+      document.body.appendChild(overlay);
+
+      console.log('Order saved:', JSON.stringify(order));
     }
   </script>
 </body>
