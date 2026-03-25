@@ -242,6 +242,52 @@
     }
     .selection-summary p { margin: 0; color: var(--muted); line-height: 1.7; font-size: 13px; }
     .selection-summary strong { color: var(--ink); }
+    .insight-board {
+      margin-top: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .insight-card {
+      border-radius: 18px;
+      padding: 14px 15px;
+      border: 1px solid transparent;
+      line-height: 1.7;
+      font-size: 13px;
+      color: var(--ink);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: tipIn 320ms cubic-bezier(.22,1,.36,1) forwards;
+      box-shadow: 0 12px 28px rgba(77, 56, 43, 0.08);
+    }
+    .insight-card.recommend {
+      background: linear-gradient(135deg, rgba(224, 247, 226, 0.96), rgba(255, 246, 216, 0.96));
+      border-color: rgba(127, 153, 90, 0.28);
+    }
+    .insight-card.gain {
+      background: linear-gradient(135deg, rgba(247, 241, 214, 0.96), rgba(255, 248, 229, 0.96));
+      border-color: rgba(184, 150, 82, 0.28);
+    }
+    .insight-card.warn {
+      background: linear-gradient(135deg, rgba(255, 241, 225, 0.98), rgba(255, 248, 238, 0.98));
+      border-color: rgba(202, 126, 56, 0.28);
+    }
+    .insight-card.danger {
+      background: linear-gradient(135deg, rgba(255, 231, 224, 0.98), rgba(255, 243, 238, 0.98));
+      border-color: rgba(191, 89, 63, 0.3);
+    }
+    .insight-empty {
+      border-radius: 18px;
+      padding: 14px 15px;
+      background: rgba(255,255,255,0.44);
+      border: 1px dashed rgba(143,107,43,0.18);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    @keyframes tipIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .ratio-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
     .ratio-box { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: rgba(255,255,255,0.42); }
     .ratio-box span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
@@ -355,6 +401,7 @@
           <p class="section-sub">规则：前调选 1-2 个，中调选 1-2 个，后调选 1 个。你也可以展开完整香精池，自由替换成更个性的一版。</p>
           <div id="picker-area"></div>
           <div class="selection-summary" id="selection-summary"></div>
+          <div class="insight-board" id="picker-insights"></div>
           <div class="actions">
             <button class="ghost-btn" id="back-to-recommend">返回推荐</button>
             <button class="main-btn" id="to-ratio">确认并调比例</button>
@@ -371,6 +418,7 @@
           </div>
           <div class="ratio-summary" id="ratio-summary"></div>
           <div class="slider-list" id="slider-list"></div>
+          <div class="insight-board" id="ratio-insights"></div>
           <p class="small">新手参考：前调 25%-40%，中调 35%-50%，后调 20%-30%。当前显示为自动归一化后的最终占比。</p>
           <div class="actions">
             <button class="ghost-btn" id="back-to-pick">返回选香</button>
@@ -462,27 +510,105 @@
       { title: '生成配方卡', mini: '保存你的专属版本' }
     ];
 
+    const pairingAliasMap = {
+      '花香中调': ['牡丹', '小苍兰', '苦橙花'],
+      '铃兰感方向': ['小苍兰', '棉花', '白麝香'],
+      '木质调': ['雪松', '檀香', '香根草'],
+      '木质香': ['雪松', '檀香', '木质香'],
+      '白花': ['苦橙花', '白玉兰', '橙花'],
+      '果香': ['水蜜桃', '梨', '荔枝'],
+      '茶香': ['绿茶', '龙井茶', '乌龙茶'],
+      '茶香方向': ['绿茶', '龙井茶', '乌龙茶'],
+      '树脂类': ['琥珀', '乳香', '安息香脂'],
+      '茴香感方向': ['回芹', '百里香', '快乐鼠尾草'],
+      '紫罗兰感方向': ['紫丁香', '鸢尾花', '含羞草'],
+      '花香': ['牡丹', '小苍兰', '苦橙花'],
+      '几乎全部柑橘': ['佛手柑', '柚子', '柠檬'],
+      '茶香方向': ['绿茶', '龙井茶', '乌龙茶'],
+      '几乎全部花果茶方向': ['白麝香', '绿茶', '佛手柑', '小苍兰', '雪松']
+    };
+
+    const categoryAnchors = {
+      '柑橘调': ['绿茶', '雪松', '白麝香'],
+      '绿叶 / 草本调': ['绿茶', '雪松', '白麝香'],
+      '花香调': ['白麝香', '雪松', '佛手柑'],
+      '果香调': ['小苍兰', '白麝香', '绿茶'],
+      '美食 / 酒饮调': ['香草', '白麝香', '檀香'],
+      '木质调': ['佛手柑', '白麝香', '龙涎'],
+      '茶香调': ['佛手柑', '白麝香', '雪松'],
+      '东方 / 辛香 / 树脂调': ['琥珀', '檀香', '白麝香'],
+      '水生调': ['白麝香', '雪松', '柚子'],
+      '药香调': ['雪松', '檀香', '白麝香'],
+      '抽象 / 质感调': ['白麝香', '棉花', '雪松'],
+      '动物香调': ['佛手柑', '绿茶', '雪松'],
+      '复合灵感调': ['白麝香', '雪松', '绿茶']
+    };
+
+    const styleDirections = [
+      { id: 'clean-commute', label: '干净通勤', names: ['佛手柑', '绿茶', '白麝香'], message: '✨ 佛手柑 + 绿茶 + 白麝香 是经典干净通勤组合，像刚洗好的白衬衫。' },
+      { id: 'summer-breeze', label: '夏日清爽', names: ['柚子', '青柠', '雪松'], message: '✨ 柚子 + 青柠 + 雪松 很像冰饮加海风，怕甜的人基本都会喜欢。' },
+      { id: 'soft-fruity', label: '温柔花果', names: ['水蜜桃', '小苍兰', '白麝香'], message: '✨ 水蜜桃 + 小苍兰 + 白麝香 走的是柔和甜净路线，送礼和约会都很稳。' },
+      { id: 'fresh-bouquet', label: '清新花束', names: ['佛手柑', '牡丹', '白麝香'], message: '✨ 佛手柑 + 牡丹 + 白麝香 是轻盈花束感，闻起来会很干净。' },
+      { id: 'tea-fig', label: '文艺茶感', names: ['龙井茶', '无花果叶', '檀香'], message: '✨ 龙井茶 + 无花果叶 + 檀香 是文艺茶感代表，安静但很有记忆点。' },
+      { id: 'neutral-wood', label: '中性木质', names: ['佛手柑', '薰衣草', '雪松'], message: '✨ 佛手柑 + 薰衣草 + 雪松 属于很稳的中性木质，通勤很好用。' },
+      { id: 'warm-osmanthus', label: '秋冬暖香', names: ['水蜜桃', '桂花', '琥珀'], message: '✨ 水蜜桃 + 桂花 + 琥珀 有被抱住的暖感，秋冬会很讨喜。' },
+      { id: 'courtyard-fig', label: '庭院故事感', names: ['无花果叶', '桂花', '广藿香'], message: '✨ 无花果叶 + 桂花 + 广藿香 会更有庭院感，适合想要一点故事的人。' },
+      { id: 'rose-oolong', label: '玫瑰茶香', names: ['玫瑰', '乌龙茶', '白麝香'], aliases: ['保加利亚玫瑰', '乌龙茶', '白麝香'], message: '✨ 玫瑰 + 乌龙茶 + 白麝香 很容易做出温柔文艺感，层次也自然。' },
+      { id: 'bamboo-air', label: '竹林空气感', names: ['竹子', '白玉兰', '白麝香'], message: '✨ 竹子 + 白玉兰 + 白麝香 很像干净竹林空气，轻盈又不空。' }
+    ];
+
+    const conflictRules = [
+      { names: ['青柠', '广藿香'], threshold: 20, message: '⚠️ 青柠和广藿香一起重手，容易前面太冲、后面又发闷。', severeMessage: '⚠️ 青柠和广藿香现在都偏高，开场会尖，尾段会压住呼吸感。', priority: 120 },
+      { names: ['水蜜桃', '桂花', '琥珀'], threshold: 18, message: '⚠️ 水蜜桃 + 桂花 + 琥珀 都往上拉，会太甜太糯。', severeMessage: '⚠️ 水蜜桃 + 桂花 + 琥珀 现在都不低，建议至少收一个，不然会像厚甜糖浆。', priority: 118 },
+      { names: ['无花果叶', '广藿香', '香根草'], threshold: 18, message: '⚠️ 无花果叶 + 广藿香 + 香根草 一起重，会从文艺变得有点难懂。', severeMessage: '⚠️ 这组三个都偏高，整体会越来越灰，前期用户不太容易接受。', priority: 116 },
+      { names: ['苦橙花', '牡丹', '小苍兰', '白麝香'], threshold: 16, message: '⚠️ 苦橙花 + 牡丹 + 小苍兰 + 白麝香 全都平均分，会太乖、记忆点不够。', severeMessage: '⚠️ 这组现在非常平均，香是干净的，但会干净到没主角。', priority: 108 },
+      { names: ['柚子', '青柠', '龙井茶'], threshold: 18, message: '⚠️ 柚子 + 青柠 + 龙井茶 一起拉高，可能会清到像空气。', severeMessage: '⚠️ 这组三个比例都偏高，留香重点会越来越薄。', priority: 110 },
+      { names: ['薄荷', '尤加利'], threshold: 18, message: '⚠️ 薄荷和尤加利一起高，会有点像清凉药膏。', severeMessage: '⚠️ 薄荷和尤加利现在都偏高，凉感会压过香气本身。', priority: 106 },
+      { names: ['海藻', '龙涎', '柚木'], threshold: 18, message: '⚠️ 海藻 + 龙涎 + 柚木 会很有海边感，但也容易偏咸偏硬。', severeMessage: '⚠️ 这组三个都偏高，整体会更像海风木板，不够亲近。', priority: 103 },
+      { names: ['栀子花', '依兰依兰'], threshold: 20, message: '⚠️ 栀子花和依兰依兰一起高，白花会显得太厚。', severeMessage: '⚠️ 栀子花和依兰依兰都偏高，开场就会很满，容易晕。', priority: 104 },
+      { names: ['蜂蜜', '桂花', '香草'], threshold: 18, message: '⚠️ 蜂蜜 + 桂花 + 香草 会把甜感堆得很满，容易发黏。', severeMessage: '⚠️ 这组三个现在都不低，甜度会糊在一起，少一点更高级。', priority: 104 },
+      { names: ['草莓', '奶油', '香草'], threshold: 18, message: '⚠️ 草莓 + 奶油 + 香草 容易直接走向甜品柜。', severeMessage: '⚠️ 草莓 + 奶油 + 香草 现在都偏高，会更像甜点而不是香水。', priority: 104 },
+      { names: ['咖啡', '焦糖', '香草'], threshold: 18, message: '⚠️ 咖啡 + 焦糖 + 香草 很容易做得太像拿铁糖浆。', severeMessage: '⚠️ 这组三个现在都偏高，厚甜会盖掉层次。', priority: 104 },
+      { names: ['黑巧克力', '烟草', '愈创木'], threshold: 18, message: '⚠️ 黑巧克力 + 烟草 + 愈创木 会很暗，第一次做容易太老成。', severeMessage: '⚠️ 这组三个现在都偏高，整体会又苦又暗，不太适合大多数人。', priority: 103 },
+      { names: ['藏红花', '乌木', '红没药'], threshold: 18, message: '⚠️ 藏红花 + 乌木 + 红没药 太容易走成厚重宗教感。', severeMessage: '⚠️ 这组三个现在都重，压迫感会比较明显。', priority: 105 },
+      { names: ['醛', '青柠', '薄荷'], threshold: 18, message: '⚠️ 醛 + 青柠 + 薄荷 亮度太高时，会有点刺鼻。', severeMessage: '⚠️ 这组三个现在都偏高，开场会闪得太快太尖。', priority: 102 },
+      { names: ['醛香', '皂感', '白麝香'], threshold: 18, message: '⚠️ 醛香 + 皂感 + 白麝香 过量会像刚拆开的洗衣粉。', severeMessage: '⚠️ 这组三个现在偏高，洁净感会过头，少了真实皮肤感。', priority: 100 },
+      { names: ['番茄叶', '罗勒', '香菜'], threshold: 16, message: '⚠️ 番茄叶 + 罗勒 + 香菜 会很像厨房菜园，不是人人都能接受。', severeMessage: '⚠️ 这组三个现在都偏高，整体会偏生青、偏菜感。', priority: 101 },
+      { names: ['土壤', '广藿香', '灵芝'], threshold: 16, message: '⚠️ 土壤 + 广藿香 + 灵芝 会往潮湿药木方向走，门槛比较高。', severeMessage: '⚠️ 这组三个现在都高，会明显偏湿土和药感。', priority: 101 },
+      { names: ['葡萄', '白葡萄酒', '香槟'], threshold: 18, message: '⚠️ 葡萄 + 白葡萄酒 + 香槟 一起拉高，会有点发酸发飘。', severeMessage: '⚠️ 这组三个现在都偏高，前段会像饮料气泡，后面不够稳。', priority: 99 },
+      { names: ['烈酒', '烟草', '橡木'], threshold: 18, message: '⚠️ 烈酒 + 烟草 + 橡木 很成熟，第一次做容易显得太硬。', severeMessage: '⚠️ 这组三个现在都高，整支香会迅速变厚重。', priority: 101 },
+      { names: ['依兰依兰', '椰子', '香草'], threshold: 18, message: '⚠️ 依兰依兰 + 椰子 + 香草 很容易从度假感变成闷甜。', severeMessage: '⚠️ 这组三个现在都偏高，热带甜感会有点糊。', priority: 99 },
+      { names: ['夜来香', '琥珀', '龙涎'], threshold: 18, message: '⚠️ 夜来香 + 琥珀 + 龙涎 会很有存在感，但也容易压人。', severeMessage: '⚠️ 这组三个现在都不低，尾韵会很厚，适合少量点缀。', priority: 100 },
+      { names: ['大花茉莉', '栀子花', '依兰依兰'], threshold: 16, message: '⚠️ 三种浓白花放一起，容易开场就太满。', severeMessage: '⚠️ 这组三个都偏高，白花会变得闷热且不留白。', priority: 101 },
+      { names: ['普洱', '乳香', '当归'], threshold: 16, message: '⚠️ 普洱 + 乳香 + 当归 会把东方药感拉得很重。', severeMessage: '⚠️ 这组三个都偏高，整体会偏药柜感，不太像日常香。', priority: 100 },
+      { names: ['百香果', '青柠', '西瓜酮'], threshold: 20, message: '⚠️ 百香果 + 青柠 + 西瓜酮 很跳，但全拉高会显得太薄太酸。', severeMessage: '⚠️ 这组三个现在都高，前段会很炸，后段却留不住。', priority: 98 }
+    ];
+
     const state = {
       step: 1,
       answers: { avoid: [] },
       recommendations: { T: [], M: [], B: [] },
       selected: { T: [], M: [], B: [] },
       ratios: {},
-      formulaName: '未命名配方'
+      formulaName: '未命名配方',
+      lastTouched: null
     };
 
     const surveyForm = document.getElementById('survey-form');
     const recommendationArea = document.getElementById('recommendation-area');
     const pickerArea = document.getElementById('picker-area');
     const selectionSummary = document.getElementById('selection-summary');
+    const pickerInsights = document.getElementById('picker-insights');
     const ratioSummary = document.getElementById('ratio-summary');
     const sliderList = document.getElementById('slider-list');
+    const ratioInsights = document.getElementById('ratio-insights');
     const resultCard = document.getElementById('result-card');
     const formulaNameInput = document.getElementById('formula-name');
     const toast = document.getElementById('toast');
 
     const enrichedPool = perfumePool.map(enrichItem);
     const poolByName = new Map(enrichedPool.map(item => [item.name, item]));
+    const pairingKnowledge = buildPairingKnowledge(enrichedPool);
 
     renderSurvey();
     bindActions();
@@ -506,6 +632,229 @@
       if (tokens.has('clean') && tokens.has('fresh')) add(['safe']);
       if (item.layer.includes('B')) add(['base']);
       return { ...item, tags: Array.from(tokens) };
+    }
+
+    function buildPairingKnowledge(pool) {
+      const knowledge = new Map(pool.map(item => [item.name, { recommended: new Set(), boosts: new Set() }]));
+      pool.forEach(item => {
+        const suggestions = new Set([
+          ...resolvePairingTargets(item.pairing),
+          ...(categoryAnchors[item.category] || []),
+          ...inferTagAnchors(item)
+        ]);
+        suggestions.forEach(name => {
+          if (!knowledge.has(name) || name === item.name) return;
+          knowledge.get(item.name).recommended.add(name);
+          knowledge.get(item.name).boosts.add(name);
+          knowledge.get(name).recommended.add(item.name);
+        });
+      });
+
+      styleDirections.forEach(direction => {
+        const allNames = normalizeStyleNames(direction).filter(name => knowledge.has(name));
+        allNames.forEach(name => {
+          allNames.forEach(other => {
+            if (name !== other) {
+              knowledge.get(name).recommended.add(other);
+              knowledge.get(name).boosts.add(other);
+            }
+          });
+        });
+      });
+
+      return Object.fromEntries(Array.from(knowledge.entries()).map(([name, entry]) => {
+        const sortNames = list => list.sort((a, b) => {
+          const itemA = poolByName.get(a);
+          const itemB = poolByName.get(b);
+          const scoreA = Number(Boolean(itemA?.star)) * 2 + sharedTagCount(poolByName.get(name), itemA);
+          const scoreB = Number(Boolean(itemB?.star)) * 2 + sharedTagCount(poolByName.get(name), itemB);
+          return scoreB - scoreA || a.localeCompare(b, 'zh-CN');
+        });
+        return [name, {
+          recommended: sortNames(Array.from(entry.recommended)),
+          boosts: sortNames(Array.from(entry.boosts)).slice(0, 8)
+        }];
+      }));
+    }
+
+    function sharedTagCount(a, b) {
+      if (!a || !b) return 0;
+      return a.tags.filter(tag => b.tags.includes(tag)).length;
+    }
+
+    function resolvePairingTargets(pairings) {
+      return pairings.flatMap(token => {
+        if (poolByName.has(token)) return [token];
+        return pairingAliasMap[token] || [];
+      });
+    }
+
+    function inferTagAnchors(item) {
+      const anchors = [];
+      if (item.tags.includes('fresh')) anchors.push('绿茶');
+      if (item.tags.includes('clean')) anchors.push('白麝香');
+      if (item.tags.includes('soft')) anchors.push('小苍兰');
+      if (item.tags.includes('premium')) anchors.push('雪松');
+      if (item.tags.includes('warm')) anchors.push('琥珀');
+      if (item.tags.includes('dessert')) anchors.push('香草');
+      if (item.tags.includes('summer')) anchors.push('西瓜酮');
+      if (item.tags.includes('base')) anchors.push('白麝香');
+      return anchors.filter(name => name !== item.name && poolByName.has(name));
+    }
+
+    function normalizeStyleNames(direction) {
+      const names = [...(direction.names || []), ...(direction.aliases || [])];
+      return names.map(name => {
+        if (poolByName.has(name)) return name;
+        const matched = Array.from(poolByName.keys()).find(key => key.includes(name));
+        return matched || name;
+      });
+    }
+
+    function getSelectedNames() {
+      return [...state.selected.T, ...state.selected.M, ...state.selected.B];
+    }
+
+    function createInsight(key, tone, text, priority) {
+      return { key, tone, text, priority };
+    }
+
+    function dedupeInsights(list, limit = 3) {
+      const seen = new Set();
+      return list
+        .sort((a, b) => b.priority - a.priority)
+        .filter(item => {
+          if (seen.has(item.key) || seen.has(item.text)) return false;
+          seen.add(item.key);
+          seen.add(item.text);
+          return true;
+        })
+        .slice(0, limit);
+    }
+
+    function renderInsightBoard(container, list, emptyText) {
+      if (!container) return;
+      if (!list.length) {
+        container.innerHTML = `<div class="insight-empty">${emptyText}</div>`;
+        return;
+      }
+      container.innerHTML = list.map((item, index) => `
+        <article class="insight-card ${item.tone}" style="animation-delay:${index * 60}ms">${item.text}</article>
+      `).join('');
+    }
+
+    function updatePickerInsights() {
+      renderInsightBoard(
+        pickerInsights,
+        buildPickerInsights(),
+        '选中香精后，这里会告诉你哪些搭起来更稳，哪些组合要少一点。'
+      );
+    }
+
+    function updateRatioInsights(totals = null, ratios = null) {
+      const normalized = ratios || getNormalizedRatios();
+      const layerTotals = totals || getLayerTotals(normalized);
+      renderInsightBoard(
+        ratioInsights,
+        buildRatioInsights(layerTotals, normalized),
+        '比例拖动后，这里会提醒你前中后调是否失衡，以及哪些组合开始变重。'
+      );
+    }
+
+    function buildPickerInsights() {
+      const selectedNames = getSelectedNames();
+      const selectedSet = new Set(selectedNames);
+      const insights = [];
+      const focusName = selectedSet.has(state.lastTouched?.name) ? state.lastTouched.name : selectedNames[0];
+
+      conflictRules.forEach(rule => {
+        if (rule.names.every(name => selectedSet.has(name))) {
+          insights.push(createInsight(`conflict-${rule.names.join('-')}`, 'warn', rule.message, rule.priority));
+        }
+      });
+
+      styleDirections.forEach(direction => {
+        const names = normalizeStyleNames(direction).filter(name => poolByName.has(name));
+        const matched = names.filter(name => selectedSet.has(name));
+        const missing = names.filter(name => !selectedSet.has(name));
+        if (matched.length >= 2 && missing.length === 0) {
+          insights.push(createInsight(`style-${direction.id}-full`, 'recommend', direction.message, 94));
+        } else if (focusName && matched.includes(focusName) && missing.length && matched.length >= 1) {
+          const prompt = missing.slice(0, 2).join('、');
+          insights.push(createInsight(
+            `style-${direction.id}-fill`,
+            'gain',
+            `💡 你已经摸到“${direction.label || '这条风格线'}”的方向了，再补 ${prompt} 会更完整。`,
+            88
+          ));
+        }
+      });
+
+      if (focusName && pairingKnowledge[focusName]) {
+        const boostTargets = pairingKnowledge[focusName].boosts.filter(name => !selectedSet.has(name)).slice(0, 2);
+        if (boostTargets.length) {
+          insights.push(createInsight(
+            `boost-${focusName}`,
+            'gain',
+            `💡 你选了${focusName}，搭配 ${boostTargets.join(' 或 ')} 会更顺，不容易互相抢戏。`,
+            90
+          ));
+        }
+      }
+
+      if (selectedNames.length >= 3) {
+        const cleanCount = selectedNames.filter(name => poolByName.get(name)?.tags.includes('clean')).length;
+        const warmCount = selectedNames.filter(name => poolByName.get(name)?.tags.includes('warm')).length;
+        if (cleanCount >= 2 && warmCount <= 1) {
+          insights.push(createInsight('overall-clean', 'recommend', '✨ 这版整体走向很干净，日常通勤会比较讨喜。', 84));
+        }
+        if (warmCount >= 2 && cleanCount === 0) {
+          insights.push(createInsight('overall-warm', 'gain', '💡 现在暖感已经起来了，留一个更轻的前调会更有呼吸感。', 82));
+        }
+      }
+
+      return dedupeInsights(insights);
+    }
+
+    function getLayerTotals(ratios) {
+      const totals = { T: 0, M: 0, B: 0 };
+      Object.entries(ratios).forEach(([name, value]) => {
+        const layer = state.selected.T.includes(name) ? 'T' : state.selected.M.includes(name) ? 'M' : 'B';
+        totals[layer] += value;
+      });
+      return totals;
+    }
+
+    function buildRatioInsights(totals, ratios) {
+      const insights = [];
+      const selectedSet = new Set(getSelectedNames());
+
+      if (totals.T > 45) {
+        insights.push(createInsight('top-heavy', 'warn', '⚠️ 前调太重可能留香时间短，前面很亮但后面掉得快。', 120));
+      }
+      if (totals.B > 40) {
+        insights.push(createInsight('base-heavy', 'warn', '⚠️ 后调太重可能开场会比较闷，建议留一点轻感空间。', 118));
+      }
+      if (totals.T >= 25 && totals.T <= 40 && totals.M >= 35 && totals.M <= 50 && totals.B >= 20 && totals.B <= 30) {
+        insights.push(createInsight('ratio-balanced', 'recommend', '✨ 当前前中后比例在新手友好区间里，整体会更稳。', 86));
+      }
+
+      conflictRules.forEach(rule => {
+        if (!rule.names.every(name => selectedSet.has(name))) return;
+        if (rule.names.every(name => (ratios[name] || 0) >= rule.threshold)) {
+          insights.push(createInsight(`ratio-${rule.names.join('-')}`, 'danger', rule.severeMessage, rule.priority + 8));
+        }
+      });
+
+      const strongNames = Object.entries(ratios).filter(([, value]) => value >= 22).map(([name]) => name);
+      if (strongNames.length >= 2) {
+        const styleMatch = styleDirections.find(direction => normalizeStyleNames(direction).filter(name => strongNames.includes(name)).length >= 2);
+        if (styleMatch) {
+          insights.push(createInsight(`ratio-style-${styleMatch.id}`, 'gain', `💡 现在 ${strongNames.slice(0, 2).join(' + ')} 已经很突出，顺着这条线走会更有主角感。`, 80));
+        }
+      }
+
+      return dedupeInsights(insights);
     }
 
     function renderSurvey() {
@@ -701,6 +1050,7 @@
         });
       });
       renderSelectionSummary();
+      updatePickerInsights();
     }
 
     function renderPoolSections(layer) {
@@ -750,8 +1100,10 @@
 
     function toggleSelection(name, layer) {
       const current = new Set(state.selected[layer]);
+      let action = 'add';
       if (current.has(name)) {
         current.delete(name);
+        action = 'remove';
       } else {
         if (layer === 'B' && current.size >= 1) {
           showToast('后调先保留 1 个，避免尾韵打架');
@@ -763,6 +1115,7 @@
         }
         current.add(name);
       }
+      state.lastTouched = { name, action, layer };
       state.selected[layer] = Array.from(current);
       buildDefaultRatios();
       renderPicker();
@@ -830,11 +1183,7 @@
 
     function renderRatioEditor() {
       const ratios = getNormalizedRatios();
-      const totals = { T: 0, M: 0, B: 0 };
-      Object.entries(ratios).forEach(([name, value]) => {
-        const layer = state.selected.T.includes(name) ? 'T' : state.selected.M.includes(name) ? 'M' : 'B';
-        totals[layer] += value;
-      });
+      const totals = getLayerTotals(ratios);
       ratioSummary.innerHTML = ['T', 'M', 'B'].map(layer => `
         <div class="ratio-box">
           <span>${layerLabel[layer]}</span>
@@ -861,9 +1210,11 @@
       sliderList.querySelectorAll('[data-slider]').forEach(input => {
         input.addEventListener('input', () => {
           state.ratios[input.dataset.slider] = Number(input.value);
+          state.lastTouched = { name: input.dataset.slider, action: 'ratio' };
           renderRatioEditor();
         });
       });
+      updateRatioInsights(totals, ratios);
     }
 
     function styleNarrative() {
@@ -1000,4 +1351,3 @@
   </script>
 </body>
 </html>
-
